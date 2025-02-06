@@ -4,7 +4,7 @@ import { createClient } from 'contentful';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import MeetContributorCard from '../../components/Card/MeetContributorCard';
-import { ContentfulContributorFields } from '../../contentful'; // Ensure correct path
+import { ContentfulContributorFields } from '../../models/contentful'; // Ensure correct path
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
 export const getStaticPaths: GetStaticPaths = async () => {

@@ -113,7 +113,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
               className={`filter ${isTransparent ? 'invert' : 'dark:invert'} cursor-pointer`}
               src={btLogoImage}
               alt="Center for Gospel Culture Logo"
-              height="auto"
+              height="300"
               width="300"
               priority
             />

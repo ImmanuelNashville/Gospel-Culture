@@ -1,6 +1,6 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
-import { ContentfulArticle } from '/models/contentful';
+import { ContentfulArticle } from '../../models/contentful';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -31,11 +31,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   try {
     const article = await client.getEntry(id);
 
+    // Type assertion for 'article' to let TypeScript know its shape
+    const typedArticle = article as { fields: ContentfulArticle['fields'] };
+
     // Ensure the content type is 'article' and the articleText is present
-    if (article.fields.articleText) {
+    if (typedArticle.fields.articleText) {
       return {
         props: {
-          article: article.fields as ContentfulArticle['fields'],
+          article: typedArticle.fields, // Now this is correctly typed
         },
       };
     } else {
@@ -49,7 +52,11 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 };
 
-const ArticlePage = ({ article }: { article: any }) => {
+interface ArticlePageProps {
+  article: ContentfulArticle['fields'] | null;
+}
+
+const ArticlePage = ({ article }: ArticlePageProps) => {
   if (!article) {
     return <div className="text-center text-xl">Article not found</div>;
   }
@@ -81,7 +88,9 @@ const ArticlePage = ({ article }: { article: any }) => {
           <header className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
             <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
-            <p className="text-sm text-gray-500">{new Date(datePublished).toLocaleDateString()}</p>
+            <p className="text-sm text-gray-500">
+  {datePublished ? new Date(datePublished).toLocaleDateString() : 'Date not available'}
+</p>
           </header>
 
           {/* Article Image */}

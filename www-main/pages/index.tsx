@@ -1,52 +1,17 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import styles from '../styles/Home.module.css'; // Ensure this file exists
-import Banner from '../components/Banner';
-import ArticleCard from '../components/Card/ArticleCard';
 import RecentCard from '../components/Card/RecentCard';
-import { add } from 'date-fns';
-import { InferGetStaticPropsType } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { useInView } from 'react-intersection-observer';
 import appConfig from '../appConfig';
-import { DurationBadge } from '../../components/Badges';
-import Card from '../components/Card';
-import { PremiumBadge } from '../components/Card/Badges';
-import { BottomRight } from '../components/Card/ContentAligners';
-import CourseCard from '/components/Card/CourseCard';
 import CardCarousel from '../components/CardCarousel';
-import ComingSoonCourse from '../../components/ComingSoonCourse';
-import ContinueWatching from '../../components/ContinueWatching';
-import FullPageHero from '/components/FullPageHero';
-import Layout from '/components/Layout';
-import Modal from '/components/Modal';
-import CourseThemeGrid from '/components/Pages/CourseLibrary/CourseThemeGrid';
-import MeetCreatorCard, { MeetCreatorData } from '/components/Pages/CourseLibrary/MeetCreatorCard';
-import FeaturedGuideSection from '/components/PageSections/FeaturedGuide';
-import FullWidthSection from '/components/PageSections/FullWidthSection';
-import SectionWithMargin from '/components/PageSections/SectionWithMargin';
-import { SectionDivider } from '/components/SectionDivider';
-import { SectionHeading } from '/components/SectionHeading';
-import Text from '../../components/Text';
-import contentfulClient from '/contentful/contentfulClient';
-import { ContentfulContributorFields } from '../contentful'; // Ensure correct path
-import { useUserDataContext } from '/hooks/useUserDataContext';
-import MeetContributorCard from '/components/Card/MeetContributorCard';
-import {
-  ContentfulCourseFields,
-  ContentfulCreatorFields,
-  ContentfulMuxVideoFields,
-  ContentfulPlaylistFields,
-  Course,
-} from '/models/contentful';
-import { FaunaOrderSource } from '../../models/fauna';
-import { formatDuration } from '../../utils';
-import { getLessonThumbnailURL } from '../../utils/courses';
+import FullPageHero from '../components/FullPageHero';
+import FullWidthSection from '../components/PageSections/FullWidthSection';
+import SectionWithMargin from '../components/PageSections/SectionWithMargin';
+import { SectionDivider } from '../components/SectionDivider';
+import MeetContributorCard from '../components/Card/MeetContributorCard';
 import { createClient } from 'contentful';
 
 export async function getStaticProps() {

@@ -1,9 +1,12 @@
+// pages/sermons/[id].tsx
+
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
+import { ContentfulSermonFields } from '../../models/contentful';
+import { ContentfulSermon } from '../../models/contentful'; // Import the typed model
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import { ContentfulSermon } from '/models/contentful'; // Adjust based on your model
 
 // Get static paths for dynamic routing
 export const getStaticPaths: GetStaticPaths = async () => {
@@ -18,7 +21,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { id: sermon.sys.id.toString() }, // Ensure id is a string
   }));
 
-  return { paths, fallback: false }; // false means 404 for non-existent paths
+  return { paths, fallback: false }; // 'false' means 404 for non-existent paths
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
@@ -35,7 +38,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     if (sermon.fields) {
       return {
         props: {
-          sermon: sermon.fields, // Assuming sermon fields exist and are valid
+          sermon: sermon.fields as ContentfulSermon['fields'], // Use typed fields
         },
       };
     } else {
@@ -49,7 +52,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 };
 
-const SermonPage = ({ sermon }: { sermon: any }) => {
+const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
   if (!sermon) {
     return <div className="text-center text-xl">Sermon not found</div>;
   }

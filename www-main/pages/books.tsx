@@ -1,7 +1,6 @@
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
 import { createClient } from 'contentful';
-import { ContentfulBook } from '../models/contentful';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 

@@ -1,6 +1,6 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
-import { ContentfulPodcast } from '/models/contentful'; // Adjust this import to match your model
+import { ContentfulPodcast } from '../../models/contentful'; // Adjust this import to match your model
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -49,12 +49,12 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 };
 
+// pages/podcasts.tsx
 const PodcastPage = ({ podcast }: { podcast: any }) => {
   if (!podcast) {
     return <div className="text-center text-xl">Podcast not found</div>;
   }
 
-  console.log('Podcast:', podcast); // Log the entire podcast to inspect its structure
   const { title, subtitle, subscribeLink, podcastCover } = podcast;
 
   // Render Subscribe Link and Cover Image
@@ -66,7 +66,7 @@ const PodcastPage = ({ podcast }: { podcast: any }) => {
           {/* Podcast Header */}
           <header className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-            <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
+            {subtitle && <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>}
           </header>
 
           {/* Podcast Cover Image */}
@@ -77,6 +77,15 @@ const PodcastPage = ({ podcast }: { podcast: any }) => {
                 alt={title}
                 className="w-full h-auto max-h-[400px] object-cover"
               />
+            </div>
+          )}
+
+          {/* Render Subscribe Link */}
+          {subscribeLink && (
+            <div className="text-center">
+              <a href={subscribeLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                Subscribe to Podcast
+              </a>
             </div>
           )}
         </div>

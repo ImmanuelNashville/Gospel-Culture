@@ -1,6 +1,6 @@
-// server.ts
 import express from 'express';
 import next from 'next';
+import { NextParsedUrlQuery } from 'next/dist/server/request-meta'; // Import the correct type
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -12,8 +12,9 @@ app
     const server = express();
 
     server.get('/custom-route', (req, res) => {
-      // Render your specific component or page here
-      return app.render(req, res, '/index', req.query);
+      // Type assertion for req.query to ensure it's compatible with NextParsedUrlQuery
+      const query = req.query as NextParsedUrlQuery;
+      return app.render(req, res, '/index', query);
     });
 
     server.get('*', (req, res) => {

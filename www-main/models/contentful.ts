@@ -215,3 +215,62 @@ export interface ContentfulContributorFields {
   oneLineBio?: string;
   socialLinks?: Document; // Rich Text from Contentful
 }
+
+
+// models/contentful.ts
+
+export interface ContentfulPodcastFields {
+  title: string;
+  subtitle?: string; // Make it optional if not every podcast has a subtitle
+  slug: string;
+  publishDate: string;
+  duration: string;
+  podcastAudio: {
+    file: {
+      url: string;
+      contentType: string;
+    };
+  };
+  coverImage: Entry<ContentfulImageFields>;
+  episodeNotes: Document; // If you have rich text
+  subscribeLink: string;
+  podcastCover: Entry<ContentfulImageFields>; // Add podcastCover here
+}
+
+export type ContentfulPodcast = Entry<ContentfulPodcastFields>;
+
+// Define ContentfulSermonFields interface
+export interface ContentfulSermonFields {
+  title: string;
+  shortText?: string;
+  slug: string; // Assuming slug holds the video URL
+  reference?: string;
+  description: Document;
+  relatedItemsLabel?: string;
+  relatedItems?: Array<Entry<ContentfulSermonFields>>; // Related sermon entries
+  customThumbnail?: Entry<ContentfulImageFields>;
+}
+
+// Export ContentfulSermon type
+export type ContentfulSermon = Entry<ContentfulSermonFields>; // Ensure this type is exported
+
+// Other content types (optional)
+export interface ContentfulImageFields {
+  title: string;
+  description?: string;
+  file: {
+    contentType: string;
+    details: {
+      size: number;
+      image: {
+        height: number;
+        width: number;
+      };
+    };
+    fileName: string;
+    url: string;
+  };
+}
+
+
+
