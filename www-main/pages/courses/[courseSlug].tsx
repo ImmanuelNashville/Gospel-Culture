@@ -73,25 +73,40 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps = async (context: GetStaticPropsContext<{ courseSlug: string }>) => {
   const { params: { courseSlug } = {} } = context;
-  const response = await contentfulClient.getEntries<ContentfulCourseFields>({
-    'fields.slug': String(courseSlug),
-    content_type: 'course',
-    include: 10,
-  });
 
-  const matchedCourse = response.items[0];
-  const tokens = getMuxTokensForCourseMarketing(matchedCourse);
-  const videoAssets = getDurationsForVideosFromFile(matchedCourse);
+  try {
+    const response = await contentfulClient.getEntries<ContentfulCourseFields>({
+      'fields.slug': String(courseSlug),
+      content_type: 'course',
+      include: 10,
+    });
 
-  return {
-    props: {
-      course: matchedCourse ?? null,
-      tokens,
-      videoAssets,
-    },
-    revalidate: 60,
-  };
+    const matchedCourse = response.items[0] || null;
+    const tokens = matchedCourse ? getMuxTokensForCourseMarketing(matchedCourse) : {};
+    const videoAssets = matchedCourse ? getDurationsForVideosFromFile(matchedCourse) : {};
+
+    return {
+      props: {
+        course: matchedCourse,
+        tokens,
+        videoAssets,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error("Error fetching course data from Contentful:", error);
+
+    return {
+      props: {
+        course: null,
+        tokens: {},
+        videoAssets: {},
+      },
+      revalidate: 60, // Still allow revalidation in case the data becomes available later
+    };
+  }
 };
+
 
 const trackJordanPassClick = () => {
   const data: mpClient.ExternalTrafficSentData = {
