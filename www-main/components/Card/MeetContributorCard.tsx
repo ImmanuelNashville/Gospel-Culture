@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
-import AvatarPlaceholder from '/components/AvatarPlaceholder';
 import SocialLinks from '/components/SocialLinks';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
@@ -25,7 +24,6 @@ const MeetContributorCard: FC<{ contributor: Contributor }> = ({ contributor }) 
             <Image src={contributor.imagePath} alt={contributor.name} width={64} height={64} sizes="128px" />
           </div>
         ) : (
-          <AvatarPlaceholder widthHeight="w-16 h-16" />
         )}
         <Link href={`/contributors/${contributor.link}`}>
           <h3 className="text-2xl font-bold hover:underline underline-offset-4 my-2">{contributor.name}</h3>
