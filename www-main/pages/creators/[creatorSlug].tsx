@@ -125,9 +125,7 @@ export const getStaticProps = async (context: GetStaticPropsContext<{ creatorSlu
 
 const CreatorPage: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
   creator,
-  coursesByCreator,
-  trailerTokens,
-  courseDurations,
+  coursesByCreator
 }) => {
   const router = useRouter();
 
@@ -137,22 +135,17 @@ const CreatorPage: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
 
   if (!creator) {
     return (
-      <Layout title="Creator Not Found">
+      <Layout 
+        title="Creator Not Found"
+        description="Creator not found page"
+      >
         <div className="text-center p-10">
           <h1 className="text-3xl font-bold">Creator Not Found</h1>
-          <p>Sorry, we couldn’t find the creator you’re looking for.</p>
+          <p>Sorry, we couldn&apos;t find the creator you&apos;re looking for.</p>
         </div>
       </Layout>
     );
   }
-
-  const videoCount = useMemo(() => {
-    return coursesByCreator?.reduce((sum, course) => {
-      const chapters = course?.fields.chapters ?? [];
-      const lessons = chapters.flatMap((chapter) => chapter.fields.lessons ?? []);
-      return sum + lessons.length;
-    }, 0);
-  }, [coursesByCreator]);
 
   return (
     <Layout
@@ -189,7 +182,7 @@ const CreatorPage: FC<InferGetStaticPropsType<typeof getStaticProps>> = ({
             ))}
           </div>
         ) : (
-          <p className="mt-6">{"This creator doesn't have any courses yet."}</p>
+          <p className="mt-6">This creator doesn&apos;t have any courses yet.</p>
         )}
       </FullWidthSection>
     </Layout>

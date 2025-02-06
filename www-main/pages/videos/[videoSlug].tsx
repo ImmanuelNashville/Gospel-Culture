@@ -97,12 +97,12 @@ export default function SingleVideoPage({
 
   if (!singleVideoPage) {
     return (
-      <Layout title="Video Not Found">
-        <div className="text-center p-10">
-          <h1 className="text-3xl font-bold">Video Not Found</h1>
-          <p>Sorry, we couldn’t find the video you’re looking for.</p>
-        </div>
-      </Layout>
+      <Layout title="Video Not Found" description="The requested video could not be found.">
+  <div className="text-center p-10">
+    <h1 className="text-3xl font-bold">Video Not Found</h1>
+    <p>Sorry, we couldn’t find the video you’re looking for.</p>
+  </div>
+</Layout>
     );
   }
 
