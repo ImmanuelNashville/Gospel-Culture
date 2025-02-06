@@ -11,7 +11,6 @@
     "analyze": "ANALYZE=true next build",
     "test": "jest",
     "tdd": "jest --watch",
-    "prepare": "husky install",
     "sync-durations": "node --require esbuild-register ./scripts/duration-sync.ts",
     "generate-sale-prices": "node --require esbuild-register ./scripts/generate-sale-prices.ts",
     "create-dev-db": "node --require esbuild-register ./scripts/create-dev-db.ts",
