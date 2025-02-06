@@ -1,11 +1,8 @@
 import { NextSeo, NextSeoProps } from 'next-seo';
 
-import Banner from './Banner';
-import Cart from './Cart';
 import Footer from './Footer';
 import Navbar from './Navbar';
 
-import appConfig from '../appConfig';
 import Link from 'next/link';
 
 interface LayoutProps {
@@ -59,30 +56,13 @@ const Layout = ({
           backgroundStyle={transparentHeader ? 'bg-bt-background-light/10' : 'bg-bt-background-light dark:bg-gray-800'}
         />
       </nav>
-      {appConfig.banner.isActive && !transparentHeader ? (
-        <Banner title={appConfig.banner.title} subtitle={appConfig.banner.subtitle} />
-      ) : // <MusicbedBanner />
-      null}
+      
       <main className={fullBleed ? '' : 'mx-auto max-w-screen-xl px-8 py-6'}>{children}</main>
       <Footer />
-      <Cart />
     </section>
   );
 };
 
 export default Layout;
 
-export const MusicbedBanner = () => (
-  <Banner
-    title="Competition time!"
-    subtitle={
-      <>
-        Make a short video about your travels and win prizes from Bright Trip & Musicbed.{' '}
-        <Link href="/musicbed-challenge" className="underline">
-          See how to enter
-        </Link>
-        .
-      </>
-    }
-  />
-);
+
