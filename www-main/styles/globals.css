@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html ::-webkit-scrollbar {
+  @apply my-6 w-2 h-2;
+}
+
+html ::-webkit-scrollbar-track {
+  @apply bg-gray-200 dark:bg-gray-800 rounded-full;
+}
+
+html ::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-600 rounded-full;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  @apply bg-gray-800;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  @apply bg-gray-600;
+}
+
+html {
+  @apply bg-bt-off-white;
+}
+
+html.dark {
+  @apply bg-gray-900;
+}
+
+@layer utilities {
+  .h-featured-creator-card {
+    height: 460px;
+  }
+}
+
+@font-face {
+  font-family: 'Filson Pro';
+  src: url('/font/FilsonPro-Regular.eot');
+  src: local('Filson Pro Regular'), local('FilsonPro-Regular'),
+    url('/font/FilsonPro-Regular.eot?#iefix') format('embedded-opentype'),
+    url('/font/FilsonPro-Regular.woff2') format('woff2'), url('/font/FilsonPro-Regular.woff') format('woff'),
+    url('/font/FilsonPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Filson Pro';
+  src: url('/font/FilsonPro-Medium.eot');
+  src: local('Filson Pro Medium'), local('FilsonPro-Medium'),
+    url('/font/FilsonPro-Medium.eot?#iefix') format('embedded-opentype'),
+    url('/font/FilsonPro-Medium.woff2') format('woff2'), url('/font/FilsonPro-Medium.woff') format('woff'),
+    url('/font/FilsonPro-Medium.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Asap';
+  src: url('/font/Asap-Regular.eot');
+  src: local('Asap'), url('/font/Asap-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Asap';
+  src: url('/font/Asap-Bold.eot');
+  src: local('Asap'), url('/font/Asap-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: bold;
+}
+
+@font-face {
+  font-family: 'Asap';
+  src: url('/font/Asap-Italic.eot');
+  src: local('Asap'), url('/font/Asap-Italic.ttf') format('truetype');
+  font-weight: italic;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Galley';
+  src: url('/font/sailing/Galley.otf');
+  src: local('Galley'), url('/font/sailing/Galley.otf') format('opentype'),
+    url('/font/sailing/Galley.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mainsail';
+  src: url('/font/sailing/MainsailCPC-Calm.otf');
+  src: local('MainSailCPC-Calm'), url('/font/sailing/MainSailCPC-Calm.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mainsail';
+  src: url('/font/sailing/MainsailCPC-Windy.otf');
+  src: local('MainSailCPC-Windy'), url('/font/sailing/MainSailCPC-Windy.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Mainsail';
+  src: url('/font/sailing/MainsailSlabCPC-Windy.otf');
+  src: local('MainsailSlabCPC-Windy'), url('/font/sailing/MainsailSlabCPC-Windy.otf') format('opentype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Mainsail';
+  src: url('/font/sailing/MainsailSlabCPC-Calm.otf');
+  src: local('MainsailSlabCPC-Calm'), url('/font/sailing/MainsailSlabCPC-Calm.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Visby';
+  src: url('/font/art/VisbyCF-Light.otf');
+  src: local('VisbyCF-Light.otf'), url('/font/art/VisbyCF-Light.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input[aria-invalid='true'] {
+  @apply border-red-600;
+}
+
+.withBTBullets li::before {
+  content: '';
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  background-image: url(/icons/check-bullet.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  left: -0.75em;
+  top: 0.2em;
+  position: relative;
+  margin-left: 0;
+  padding: 0;
+}

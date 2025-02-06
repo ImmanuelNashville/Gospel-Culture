@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSaveMode": "modificationsIfAvailable",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+        "strings": true
+      },
+      "typescript.tsdk": "node_modules/typescript/lib"
+}

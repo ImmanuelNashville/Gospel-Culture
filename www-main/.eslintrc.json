@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended"
+  ],
+  "plugins": ["@typescript-eslint/", "@tanstack/query"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "@next/next/no-img-element": 0
+  }
+}

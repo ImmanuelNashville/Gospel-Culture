@@ -1,0 +1,30 @@
+.leftAccent,
+.leftAccentCompact,
+.bottomAccent {
+  position: relative;
+  left: 6px;
+}
+
+.leftAccent::before,
+.leftAccentCompact::before,
+.bottomAccent::after {
+  content: '';
+  left: -6px;
+  border-radius: 4px;
+  height: 82%;
+  width: 4px;
+  top: 8%;
+  position: absolute;
+  @apply bg-bt-orange;
+}
+
+.bottomAccent {
+  left: 0;
+}
+
+.bottomAccent::after {
+  left: 0;
+  width: 100%;
+  height: 4px;
+  top: 64px;
+}

@@ -1,0 +1,43 @@
+/* styles/Home.module.css */
+
+.hero {
+  background: url('/path/to/your/hero-image.jpg') no-repeat center center;
+  background-size: cover;
+  padding: 100px 20px;
+  text-align: center;
+  color: #000;
+}
+
+.heroContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.mockContent {
+  padding: 50px 20px;
+  background: #f9f9f9;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contentBlocks {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+
+.contentBlock {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 30%;
+}
+
+.bg-bt-background-light {
+  background: #000 !important;
+}

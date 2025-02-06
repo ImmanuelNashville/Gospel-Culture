@@ -1,0 +1,28 @@
+.whatYouWillLearn li > p {
+  padding-left: 4px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  line-height: 1.25rem;
+}
+
+.whatYouWillLearn li {
+  margin: 0;
+  padding: 0;
+  margin-left: 28px;
+  line-height: 1rem;
+}
+
+.whatYouWillLearn li::before {
+  content: '';
+  display: inline-block;
+  height: 1rem;
+  width: 1rem;
+  background-image: url(/icons/check-bullet.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  left: -1.25rem;
+  position: relative;
+  top: 1.25rem;
+  margin-left: 0;
+  padding: 0;
+}

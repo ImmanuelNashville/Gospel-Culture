@@ -1,0 +1,8 @@
+.pageSection:nth-of-type(odd) {
+  @apply bg-bt-teal-ultraLight/20;
+}
+
+.pageSection > div {
+  gap: 0 5rem;
+  align-items: center;
+}
