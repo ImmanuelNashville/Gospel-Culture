@@ -9,9 +9,10 @@ import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY!,
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_KEY, // Ensure this is correctly set
   });
+  
 
   const contributors = await client.getEntries({
     content_type: 'contributor',
