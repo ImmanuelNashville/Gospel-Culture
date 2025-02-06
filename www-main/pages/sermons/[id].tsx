@@ -1,20 +1,31 @@
-// pages/sermons/[id].tsx
-
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
-import { ContentfulSermonFields } from '../../models/contentful';
+import { ContentfulSermonFields } from '../../models/contentful'; // Import the correct type
 import { ContentfulSermon } from '../../models/contentful'; // Import the typed model
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
+// Helper function to get Contentful client
+const getContentfulClient = () => {
+  const spaceId = process.env.CONTENTFUL_SPACE_ID;
+  const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
+
+  if (!spaceId || !accessToken) {
+    throw new Error("Missing Contentful environment variables.");
+  }
+
+  return createClient({
+    space: spaceId,
+    accessToken: accessToken,
+  });
+};
+
 // Get static paths for dynamic routing
 export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY,
-  });
+  const client = getContentfulClient();
 
+  // Fetch all sermons to get their IDs for dynamic routing
   const res = await client.getEntries({ content_type: 'sermon' });
 
   const paths = res.items.map((sermon) => ({
@@ -24,12 +35,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false }; // 'false' means 404 for non-existent paths
 };
 
+// Get static props for the sermon page
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { id } = params as { id: string }; // Get sermon ID from URL
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY!,
-  });
+
+  const client = getContentfulClient();
 
   try {
     const sermon = await client.getEntry(id);

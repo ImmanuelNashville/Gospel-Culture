@@ -5,11 +5,23 @@ import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY,
+// Helper function to get the Contentful client
+const getContentfulClient = () => {
+  const spaceId = process.env.CONTENTFUL_SPACE_ID;
+  const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
+
+  if (!spaceId || !accessToken) {
+    throw new Error("Missing Contentful environment variables.");
+  }
+
+  return createClient({
+    space: spaceId,
+    accessToken: accessToken,
   });
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const client = getContentfulClient();
 
   // Fetch all podcasts to get their IDs for dynamic routing
   const res = await client.getEntries({ content_type: 'podcast' });
@@ -23,10 +35,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { id } = params as { id: string }; // Get podcast ID from URL
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY!,
-  });
+
+  const client = getContentfulClient();
 
   try {
     const podcast = await client.getEntry(id);
@@ -50,7 +60,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 };
 
 // pages/podcasts.tsx
-const PodcastPage = ({ podcast }: { podcast: any }) => {
+
+const PodcastPage = ({ podcast }: { podcast: ContentfulPodcast['fields'] | null }) => {
   if (!podcast) {
     return <div className="text-center text-xl">Podcast not found</div>;
   }
@@ -66,7 +77,7 @@ const PodcastPage = ({ podcast }: { podcast: any }) => {
           {/* Podcast Header */}
           <header className="text-center mb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-            {subtitle && <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>}
+            <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
           </header>
 
           {/* Podcast Cover Image */}

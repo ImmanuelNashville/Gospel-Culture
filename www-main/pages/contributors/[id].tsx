@@ -8,10 +8,18 @@ import { ContentfulContributorFields } from '../../models/contentful'; // Ensure
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY, // Ensure this is correctly set
-  });
+  const spaceId = process.env.CONTENTFUL_SPACE_ID;
+const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
+
+if (!spaceId || !accessToken) {
+  throw new Error("Missing Contentful environment variables.");
+}
+
+const client = createClient({
+  space: spaceId,
+  accessToken: accessToken,
+});
+
   
 
   const contributors = await client.getEntries({

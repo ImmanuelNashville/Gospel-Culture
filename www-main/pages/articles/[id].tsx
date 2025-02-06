@@ -5,11 +5,23 @@ import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY,
+// Helper function to get Contentful client
+const getContentfulClient = () => {
+  const spaceId = process.env.CONTENTFUL_SPACE_ID;
+  const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
+
+  if (!spaceId || !accessToken) {
+    throw new Error("Missing Contentful environment variables.");
+  }
+
+  return createClient({
+    space: spaceId,
+    accessToken: accessToken,
   });
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const client = getContentfulClient();
 
   // Fetch all articles to get their IDs for dynamic routing
   const res = await client.getEntries({ content_type: 'article' });
@@ -23,10 +35,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { id } = params as { id: string }; // Get article ID from URL
-  const client = createClient({
-    space: process.env.CONTENTFUL_SPACE_ID!,
-    accessToken: process.env.CONTENTFUL_ACCESS_KEY!,
-  });
+
+  const client = getContentfulClient();
 
   try {
     const article = await client.getEntry(id);
@@ -89,8 +99,8 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
             <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
             <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
             <p className="text-sm text-gray-500">
-  {datePublished ? new Date(datePublished).toLocaleDateString() : 'Date not available'}
-</p>
+              {datePublished ? new Date(datePublished).toLocaleDateString() : 'Date not available'}
+            </p>
           </header>
 
           {/* Article Image */}
