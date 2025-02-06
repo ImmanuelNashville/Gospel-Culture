@@ -5,7 +5,6 @@ import RecentCard from '../components/Card/RecentCard';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import appConfig from '../appConfig';
 import CardCarousel from '../components/CardCarousel';
 import FullPageHero from '../components/FullPageHero';
 import FullWidthSection from '../components/PageSections/FullWidthSection';
@@ -134,7 +133,7 @@ const HomePage = ({
           height="min-h-[90vh]"
           overlayStyle="bg-[#205952]"
           mainContent={
-            <div className={`flex flex-col gap-4 items-center -mt-12 ${appConfig.banner.isActive && 'mt-24'}`}>
+            <div className={`flex flex-col gap-4 items-center -mt-12`}>
               <img src="/images/cgc-badge-gold.webp" alt="Logo Badge" className="w-10 h-24 md:w-32 md:h-32" />
               <h1 className="font-bold text-white text-5xl md:text-6xl text-center mt-6">
                 Helping churches reflect

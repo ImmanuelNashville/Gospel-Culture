@@ -7,16 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import va from '@vercel/analytics';
 import { FC, Fragment } from 'react';
-import { useBrightTripUser } from '../hooks/useBrightTripUser';
-import { useCartContext } from '../hooks/useCartContext';
-import { useColorScheme } from '../hooks/useColorScheme';
-import * as gtag from '../lib/gtag';
-import * as mpClient from '../mixpanel/client';
 import btLogoImage from '../public/images/logo.png';
-import { withAWSPathPrefix } from '../utils';
-import AvatarPlaceholder from './AvatarPlaceholder';
-import Button from './Button';
-import HeaderProfile from './HeaderProfile';
+
 
 const navLinksLeft = [
   {
@@ -58,37 +50,12 @@ const transparentTextTheme = 'text-white dark:text-white hover:text-gray-200 dar
 const opaqueTextTheme = 'text-gray-600 hover:text-gray-800 dark:text-gray-200 dark:hover:text-white';
 
 const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dark:bg-gray-800' }) => {
-  const { user, isLoading } = useBrightTripUser();
-  const { toggleCart } = useCartContext();
-  const { themeIcon, toggleTheme } = useColorScheme();
+ 
 
   const isTransparent = backgroundStyle === 'bg-bt-background-light/10';
-  const profileImageUrl = user?.imageUrl?.startsWith('http') ? user.imageUrl : withAWSPathPrefix(user?.imageUrl ?? '');
   const textTheme = isTransparent ? transparentTextTheme : opaqueTextTheme;
 
-  const signUpTrack = () => {
-    va.track('Sign Up');
-    try {
-      mpClient.track(mpClient.Event.SignUp, {});
-      gtag.event(gtag.Action.SignUp, {
-        method: 'auth0',
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const signInTrack = () => {
-    va.track('Log In');
-    try {
-      mpClient.track(mpClient.Event.SignIn, {});
-      gtag.event(gtag.Action.Login, {
-        method: 'auth0',
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  
 
   const loginURL = `/login${
     typeof window !== 'undefined' ? '?returnTo=' + encodeURIComponent(window.location.href) : ''
@@ -120,11 +87,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
           </Link>
           <span className="sr-only">Center for Gospel Culture</span>
           <div className="ml-4 md:ml-6 lg:ml-10 hidden items-center gap-6 md:flex">
-            {navLinksLeft
-              .filter((link) => (link.href === '/my-courses' ? Boolean(user) : true))
-              .map((navLink) => (
-                <NavLink key={navLink.href} href={navLink.href} label={navLink.label} textTheme={textTheme} />
-              ))}
+            
           </div>
         </div>
         <div className="-my-2 -mr-2 flex space-x-2 md:hidden">
@@ -133,9 +96,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
               <SearchIcon className="w-6 h-6" />
             </button>
           </Link>
-          <button className="h-10 w-10 flex justify-center items-center" aria-label="View cart" onClick={toggleCart}>
-            <ShoppingCartIcon className="w-6 h-6" />
-          </button>
+        
           <Popover.Button
             className={`${backgroundStyle} inline-flex items-center justify-center rounded-md p-2 ${textTheme} focus:outline-none focus:ring-2 focus:ring-inset focus:ring-bt-teal`}
           >
@@ -155,26 +116,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
               </button>
             </Link>
           </div>
-          {user ? (
-            <HeaderProfile user={user} />
-          ) : isLoading ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              <Link href={loginURL} onClick={signInTrack} className="whitespace-nowrap">
-                Log In
-              </Link>
-              <Link href={signUpURL}>
-                <Button
-                  variant={isTransparent ? 'glassPrimary' : 'secondary'}
-                  onClick={signUpTrack}
-                  className="whitespace-nowrap"
-                >
-                  Sign Up
-                </Button>
-              </Link>
-            </>
-          )}
+        
         </div>
       </div>
 
@@ -203,13 +145,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
                       priority
                     />
                   </Link>
-                  <button
-                    onClick={toggleTheme}
-                    aria-label="Toggle Dark Mode"
-                    className="h-10 w-10 rounded-full hover:bg-black/5 flex justify-center items-center"
-                  >
-                    {themeIcon}
-                  </button>
+                  
                 </div>
                 <div className="">
                   <Popover.Button className="focus:outline-none inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-bt-teal dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-200">
@@ -222,7 +158,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
             <div className="py-6 px-5">
               <div className="flex flex-col gap-6">
                 {navLinksLeft
-                  .filter((link) => (link.href === '/my-courses' ? Boolean(user) : true))
+                  
                   .map((item) => (
                     <NavLink key={item.label} href={item.href} label={item.label} textTheme={opaqueTextTheme} />
                   ))}
@@ -231,60 +167,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
                   <NavLink key={item.label} href={item.href} label={item.label} textTheme={opaqueTextTheme} />
                 ))}
               </div>
-              <div className="mt-6 border-t pt-5 dark:border-gray-600">
-                {user ? (
-                  <div className="flex flex-col gap-2 text-gray-600 dark:text-gray-300">
-                    <div className="py-5">
-                      <div className="flex items-center gap-4">
-                        {user.imageUrl ? (
-                          <Image
-                            src={profileImageUrl}
-                            className="rounded-full"
-                            alt=""
-                            width="64"
-                            height="64"
-                            unoptimized
-                          />
-                        ) : (
-                          <AvatarPlaceholder size="compact" />
-                        )}
-                        <div>
-                          <span className="block font-bold text-subtitle1">
-                            {user.firstName} {user.lastName}
-                          </span>
-                          <span className="text-sm font-bodycopy block dark:text-gray-400">{user.email}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <Link href="/profile">
-                        <Button variant="primary" className="w-full">
-                          View Profile
-                        </Button>
-                      </Link>
-                      <Link href={logoutURL}>
-                        <Button variant="background" className="w-full">
-                          Sign out
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 gap-2 w-full">
-                    <Link href={loginURL}>
-                      <Button variant="background" className="w-full" onClick={signInTrack}>
-                        Log In
-                      </Button>
-                    </Link>
-                    <Link href={loginURL}>
-                      <Button variant="primary" className="w-full" onClick={signUpTrack}>
-                        Sign Up
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
+              
             </div>
           </div>
         </Popover.Panel>
