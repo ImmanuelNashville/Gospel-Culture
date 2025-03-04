@@ -1,18 +1,18 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
-import { ContentfulSermonFields } from '../../models/contentful'; // Import the correct type
-import { ContentfulSermon } from '../../models/contentful'; // Import the typed model
+import { ContentfulSermonFields } from '../../models/contentful';
+import { ContentfulSermon } from '../../models/contentful';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { BLOCKS } from '@contentful/rich-text-types'; // For rendering options
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
-// Helper function to get Contentful client
 const getContentfulClient = () => {
   const spaceId = process.env.CONTENTFUL_SPACE_ID;
   const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
 
   if (!spaceId || !accessToken) {
-    throw new Error("Missing Contentful environment variables.");
+    throw new Error('Missing Contentful environment variables.');
   }
 
   return createClient({
@@ -21,34 +21,28 @@ const getContentfulClient = () => {
   });
 };
 
-// Get static paths for dynamic routing
 export const getStaticPaths: GetStaticPaths = async () => {
   const client = getContentfulClient();
-
-  // Fetch all sermons to get their IDs for dynamic routing
   const res = await client.getEntries({ content_type: 'sermon' });
 
   const paths = res.items.map((sermon) => ({
-    params: { id: sermon.sys.id.toString() }, // Ensure id is a string
+    params: { id: sermon.sys.id.toString() },
   }));
 
-  return { paths, fallback: false }; // 'false' means 404 for non-existent paths
+  return { paths, fallback: false };
 };
 
-// Get static props for the sermon page
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params as { id: string }; // Get sermon ID from URL
-
+  const { id } = params as { id: string };
   const client = getContentfulClient();
 
   try {
     const sermon = await client.getEntry(id);
-
-    // Ensure the content type is 'sermon' and the required fields are present
+    console.log('Raw sermon fields:', sermon.fields); // Optional: keep for debugging
     if (sermon.fields) {
       return {
         props: {
-          sermon: sermon.fields as ContentfulSermon['fields'], // Use typed fields
+          sermon: sermon.fields as ContentfulSermon['fields'],
         },
       };
     } else {
@@ -62,16 +56,23 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 };
 
+const getYouTubeEmbedUrl = (url: string | undefined) => {
+  if (!url) return null;
+  const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/);
+  const videoId = videoIdMatch ? videoIdMatch[1] : null;
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+};
+
 const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
   if (!sermon) {
     return <div className="text-center text-xl">Sermon not found</div>;
   }
 
-  console.log('Sermon:', sermon); // Log the entire sermon to inspect its structure
   const {
     title,
     shortText,
-    slug, // The video URL is stored in the slug field
+    slug,
+    ytSermonSHORT,
     reference,
     description,
     relatedItemsLabel,
@@ -79,31 +80,55 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
     customThumbnail,
   } = sermon;
 
-  // Safely extract the video URL from the slug field
-  const videoUrl = slug || ''; // Default to empty string if slug is undefined or null
+  const youtubeEmbedUrl = getYouTubeEmbedUrl(ytSermonSHORT);
+
+  // Rendering options for rich text (consistent with your article page)
+  const renderOptions = {
+    renderNode: {
+      [BLOCKS.PARAGRAPH]: (node, children) => <p className="mb-4">{children}</p>,
+      [BLOCKS.HEADING_1]: (node, children) => <h1 className="text-3xl font-bold mt-6">{children}</h1>,
+      [BLOCKS.HEADING_2]: (node, children) => <h2 className="text-2xl font-semibold mt-4">{children}</h2>,
+    },
+  };
+
+  // Render description as rich text
+  let renderedDescription = null;
+  if (description && description.nodeType === 'document') {
+    renderedDescription = documentToReactComponents(description, renderOptions);
+  }
 
   return (
     <>
       <Navbar />
       <div className="max-w-4xl mx-auto p-6">
-        {/* Title */}
         <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-
-        {/* Short Text (Subtitle or Introduction) */}
         {shortText && <p className="text-lg text-gray-600 mb-4">{shortText}</p>}
-
-        {/* Reference */}
         {reference && <p className="text-sm text-gray-500 mb-4">Reference: {reference}</p>}
 
-        {/* Description (long text) */}
-        {description && description.nodeType === 'document' && (
-          <div className="prose prose-lg mb-6">{documentToReactComponents(description)}</div>
+        {/* YouTube Video */}
+        <div className="mt-6 mb-6">
+          {youtubeEmbedUrl ? (
+            <iframe
+              width="100%"
+              height="400"
+              src={youtubeEmbedUrl}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="rounded-lg shadow-md"
+            ></iframe>
+          ) : (
+            <p className="text-gray-500">No video available for this sermon.</p>
+          )}
+        </div>
+
+        {/* Description under video */}
+        {renderedDescription && (
+          <div className="prose prose-lg mb-6">{renderedDescription}</div>
         )}
 
-        {/* Related Items Label */}
         {relatedItemsLabel && <h3 className="text-xl font-semibold text-gray-700 mb-4">{relatedItemsLabel}</h3>}
-
-        {/* Related Items */}
         {relatedItems && relatedItems.length > 0 && (
           <ul className="list-disc pl-6">
             {relatedItems.map((item) => (
@@ -113,8 +138,6 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
             ))}
           </ul>
         )}
-
-        {/* Custom Thumbnail */}
         {customThumbnail && (
           <div className="mt-6">
             <img

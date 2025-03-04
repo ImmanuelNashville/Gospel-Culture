@@ -24,12 +24,11 @@ export async function getStaticProps() {
       client.getEntries({ content_type: 'podcast', limit: 4 }),
       client.getEntries({ content_type: 'sermon', limit: 4 }),
       client.getEntries({ content_type: 'article', limit: 4 }),
-      client.getEntries({ content_type: 'contributor', limit: 6 }),
+      client.getEntries({ content_type: 'contributor', limit: 8 }),
     ]);
 
-    // Get raw URL from Contentful asset
     const getAssetUrl = (asset: any) => {
-      if (!asset?.fields?.file?.url) return null;
+      if (!asset?.fields?.file?.url) return '/placeholder.png'; // Fallback image
       return asset.fields.file.url.startsWith('//') ? `https:${asset.fields.file.url}` : asset.fields.file.url;
     };
 
@@ -46,15 +45,14 @@ export async function getStaticProps() {
         title: item.fields.title,
         link: `/sermons/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.customThumbnail),
-        videoUrl: item.fields.slug || null,
+        videoUrl: item.fields.ytSermonSHORT || null, // Updated field name
         sys: item.sys,
-        description: item.fields.description, // Add description to display in the carousel
       })),
       ...articles.items.map((item: any) => ({
         type: 'Article' as const,
         title: item.fields.title,
         link: `/articles/${item.sys.id}`,
-        imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : null,
+        imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : '/placeholder.png', // Default to placeholder
         sys: item.sys,
       })),
     ];
@@ -229,7 +227,7 @@ const HomePage = ({
         {/* Meet Contributors Section */}
         <FullWidthSection bgColor="bg-[#2a2727]">
           <h2 className="text-4xl font-bold mb-6 text-white/90 text-center">Meet Our Contributors</h2>
-          <div className="grid grid-cols-2 md:flex md:items-center gap-4">
+          <div className="grid grid-cols-4 md:grid-cols-4 gap-6">
             {contributorData.map((contributor) => (
               <MeetContributorCard key={contributor.link} contributor={contributor} />
             ))}
@@ -254,9 +252,7 @@ const HomePage = ({
                     <span className="text-bodySmall md:text-body font-bold leading-tight text-gray-800 dark:text-gray-300">
                       {sermon.title}
                     </span>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {sermon.description || 'No description available'}
-                    </p>
+                   
                   </div>
                 </div>
               </Link>
