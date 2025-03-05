@@ -29,12 +29,7 @@ const ArticleCard = ({ article, cardContent, imageSizes, className = '', priorit
             <div className="p-4">
               <h3 className="font-bold text-lg text-gray-900">{article.fields.title}</h3>
               {article.fields.subtitle && <p className="text-sm text-gray-600">{article.fields.subtitle}</p>}
-              {article.fields.articleText && (
-                <div className="text-sm text-gray-500 line-clamp-3">
-                  {/* Note: articleText is a Document type from Contentful's Rich Text.
-                      You'll need to use a rich text renderer to display it properly */}
-                </div>
-              )}
+              {/* Removed the articleText/articleContent section */}
             </div>
           )}
         </Card>

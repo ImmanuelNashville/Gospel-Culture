@@ -2,40 +2,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FC } from 'react';
 import AvatarPlaceholder from '../../components/AvatarPlaceholder';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 
 interface Contributor {
   name: string;
   entryTitle: string;
   link: string;
-  bio: string;
   imagePath: string;
-  heroImagePath: string;
-  oneLineBio: string;
-  socialLinks?: any;
 }
 
 const MeetContributorCard: FC<{ contributor: Contributor }> = ({ contributor }) => {
   return (
-    <div className="flex flex-col-reverse md:grid md:grid-cols-1 text-white place-items-center md:gap-12 shadow-md md:shadow-none mt-10">
-      <div className="flex flex-col items-center md:shadow-md backdrop-blur-lg bg-white/10 p-12 rounded-b-2xl md:rounded-2xl">
+    <div className="flex flex-col items-center text-white shadow-md bg-white/10 p-8 rounded-2xl">
+      <div className="h-24 w-24 rounded-full shadow-md overflow-hidden relative">
         {contributor.imagePath ? (
-          <div className="h-16 w-16 rounded-full shadow-md overflow-hidden">
-            <Image src={contributor.imagePath} alt={contributor.name} width={64} height={64} sizes="128px" />
-          </div>
+          <Image 
+            src={contributor.imagePath} 
+            alt={contributor.name} 
+            fill 
+            className="object-cover" 
+          />
         ) : (
-          <AvatarPlaceholder widthHeight="w-16 h-16" />
-        )}
-        <Link href={`/contributors/${contributor.link}`}>
-          <h3 className="text-2xl font-bold hover:underline underline-offset-4 my-2">{contributor.name}</h3>
-        </Link>
-        <p className="text-lg font-bodycopy leading-relaxed text-left text-white/80 mt-1 mb-4">
-          {contributor.oneLineBio || 'More info coming soon'}
-        </p>
-        {contributor.socialLinks && (
-          <div className="text-white/80 hover:text-white">{documentToReactComponents(contributor.socialLinks)}</div>
+          <AvatarPlaceholder widthHeight="w-24 h-24" />
         )}
       </div>
+      <Link href={`/contributors/${contributor.link}`}>
+        <h3 className="text-2xl font-bold hover:underline underline-offset-4 my-2 text-center">{contributor.name}</h3>
+      </Link>
+      <p className="text-lg text-white/80 text-center">{contributor.entryTitle}</p>
     </div>
   );
 };

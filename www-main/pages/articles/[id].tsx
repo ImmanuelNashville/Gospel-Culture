@@ -1,7 +1,8 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
 import { ContentfulArticle } from '../../models/contentful';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
+import { documentToReactComponents, Options } from '@contentful/rich-text-react-renderer';
+import { BLOCKS, INLINES, Block, Inline } from '@contentful/rich-text-types';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -11,6 +12,7 @@ const getContentfulClient = () => {
   const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
 
   if (!spaceId || !accessToken) {
+    console.error("Missing Contentful environment variables.");
     throw new Error("Missing Contentful environment variables.");
   }
 
@@ -22,42 +24,37 @@ const getContentfulClient = () => {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const client = getContentfulClient();
+  try {
+    const res = await client.getEntries({ content_type: 'article' });
+    console.log('getStaticPaths - Total articles fetched:', res.items.length);
+    res.items.forEach((article) => console.log('Article ID:', article.sys.id));
 
-  // Fetch all articles to get their IDs for dynamic routing
-  const res = await client.getEntries({ content_type: 'article' });
+    const paths = res.items.map((article) => ({
+      params: { id: article.sys.id },
+    }));
 
-  const paths = res.items.map((article) => ({
-    params: { id: article.sys.id },
-  }));
-
-  return { paths, fallback: false }; // 'false' means 404 for non-existent paths
+    return { paths, fallback: false };
+  } catch (error) {
+    console.error('getStaticPaths error:', error);
+    return { paths: [], fallback: false };
+  }
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params as { id: string }; // Get article ID from URL
-
+  const { id } = params as { id: string };
+  console.log('getStaticProps - Fetching article with ID:', id);
   const client = getContentfulClient();
 
   try {
     const article = await client.getEntry(id);
-
-    // Type assertion for 'article' to let TypeScript know its shape
     const typedArticle = article as { fields: ContentfulArticle['fields'] };
+    console.log('Fetched article fields:', JSON.stringify(typedArticle.fields, null, 2));
 
-    // Ensure the content type is 'article' and the articleText is present
-    if (typedArticle.fields.articleText) {
-      return {
-        props: {
-          article: typedArticle.fields, // Now this is correctly typed
-        },
-      };
-    } else {
-      return {
-        props: { article: null },
-      };
-    }
+    return {
+      props: { article: typedArticle.fields },
+    };
   } catch (error) {
-    console.error('Error fetching article:', error);
+    console.error('Error fetching article with ID', id, ':', error);
     return { props: { article: null } };
   }
 };
@@ -67,26 +64,40 @@ interface ArticlePageProps {
 }
 
 const ArticlePage = ({ article }: ArticlePageProps) => {
+  console.log('Article prop in component:', article);
   if (!article) {
     return <div className="text-center text-xl">Article not found</div>;
   }
 
-  console.log('Article:', article); // Log the entire article to inspect its structure
-  const { title, subtitle, datePublished, articleText, images } = article;
+  const { title, subtitle, datePublished, text: articleText, images } = article;
 
-  // Check if articleText exists and if it's in rich text format
-  let renderedArticleText = null;
-  if (articleText && articleText.nodeType === 'document') {
-    // If it's in rich text format, render it as React components
-    try {
-      renderedArticleText = documentToReactComponents(articleText);
-    } catch (error) {
-      console.error('Error rendering article text:', error);
-      renderedArticleText = <p>Error rendering article content.</p>;
+  const options: Options = {
+    renderNode: {
+      [BLOCKS.PARAGRAPH]: (node: Block | Inline, children: React.ReactNode) => <p className="mb-4">{children}</p>,
+      [BLOCKS.HEADING_1]: (node: Block | Inline, children: React.ReactNode) => <h1 className="text-3xl font-bold mt-6">{children}</h1>,
+      [BLOCKS.HEADING_2]: (node: Block | Inline, children: React.ReactNode) => <h2 className="text-2xl font-semibold mt-4">{children}</h2>,
+      [BLOCKS.UL_LIST]: (node: Block | Inline, children: React.ReactNode) => <ul className="list-disc pl-6">{children}</ul>,
+      [BLOCKS.OL_LIST]: (node: Block | Inline, children: React.ReactNode) => <ol className="list-decimal pl-6">{children}</ol>,
+      [BLOCKS.QUOTE]: (node: Block | Inline, children: React.ReactNode) => <blockquote className="border-l-4 pl-4 italic text-gray-600">{children}</blockquote>,
+      [INLINES.HYPERLINK]: (node: Block | Inline, children: React.ReactNode) => (
+        <a href={(node as Inline).data.uri} className="text-blue-600 underline">
+          {children}
+        </a>
+      ),
+    },
+  };
+
+  let renderedArticleText;
+  try {
+    if (articleText && 'nodeType' in articleText && articleText.nodeType === 'document') {
+      renderedArticleText = documentToReactComponents(articleText, options);
+    } else {
+      console.log('text field is not a valid rich text document:', articleText);
+      renderedArticleText = <p>No article content available.</p>;
     }
-  } else {
-    // If it's plain text, render it directly
-    renderedArticleText = <p>{articleText}</p>;
+  } catch (error) {
+    console.error('Error rendering rich text:', error);
+    renderedArticleText = <p>Error rendering article content.</p>;
   }
 
   return (
@@ -94,28 +105,25 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
       <Navbar />
       <main className="max-w-4xl mx-auto p-6">
         <div className="p-8">
-          {/* Article Header */}
           <header className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-            <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
             <p className="text-sm text-gray-500">
               {datePublished ? new Date(datePublished).toLocaleDateString() : 'Date not available'}
             </p>
+            <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
+            <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
           </header>
 
-          {/* Article Image */}
           {images && images.length > 0 && (
             <div className="mb-8">
               <img
                 src={images[0].fields.file.url}
                 alt={title}
-                className="w-full h-auto max-h-[400px] object-cover" // Reduced height and ensured proper scaling
+                className="w-full h-auto max-h-[400px] object-cover"
               />
             </div>
           )}
 
-          {/* Article Content */}
-          <section className="prose lg:prose-xl text-gray-800">
+          <section className="prose lg:prose-xl max-w-[700px] mx-auto text-gray-800">
             <div>{renderedArticleText}</div>
           </section>
         </div>

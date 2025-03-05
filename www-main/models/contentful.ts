@@ -1,6 +1,7 @@
 import { Entry } from 'contentful';
 import { Document } from '@contentful/rich-text-types';
 
+
 export type Course = Entry<ContentfulCourseFields>;
 export type Creator = Entry<ContentfulCreatorFields>;
 export type FAQ = Entry<ContentfulFAQFields>;
@@ -195,11 +196,11 @@ export interface ContentfulArticleFields {
   internalTitle: string;
   title: string;
   subtitle?: string;
-  datePublished?: string; // ISO date string or Date object depending on Contentful settings
-  contributor?: Entry<ContentfulCreatorFields>; // If it's a reference to the Creator
-  sourceLocation?: Document; // If this is a rich text field
-  images?: Entry<ContentfulImageFields>[]; // Handling multiple images
-  articleText: Document; // Assuming this is long text (rich text)
+  datePublished?: string;
+  contributor?: Entry<ContentfulCreatorFields>;
+  sourceLocation?: Document; // If this is 'source' in the log
+  images?: Entry<ContentfulImageFields>[];
+  text: Document; // Changed from 'articleText' to 'text'
 }
 
 // You can also define the Article entry type as follows:
@@ -215,6 +216,8 @@ export interface ContentfulContributorFields {
   oneLineBio?: string;
   socialLinks?: Document; // Rich Text from Contentful
 }
+
+
 
 
 // models/contentful.ts
@@ -239,17 +242,20 @@ export interface ContentfulPodcastFields {
 
 export type ContentfulPodcast = Entry<ContentfulPodcastFields>;
 
-// Define ContentfulSermonFields interface
 export interface ContentfulSermonFields {
   title: string;
   shortText?: string;
-  slug: string; // Assuming slug holds the video URL
+  slug?: any;
+  ytSermonSHORT?: string;
   reference?: string;
-  description: Document;
+  description?: { nodeType: 'document'; data: any; content: any[] }; // Rich text
   relatedItemsLabel?: string;
-  relatedItems?: Array<Entry<ContentfulSermonFields>>; // Related sermon entries
-  customThumbnail?: Entry<ContentfulImageFields>;
+  relatedItems?: any[];
+  customThumbnail?: any;
+  internalName?: string;
 }
+
+
 
 // Export ContentfulSermon type
 export type ContentfulSermon = Entry<ContentfulSermonFields>; // Ensure this type is exported

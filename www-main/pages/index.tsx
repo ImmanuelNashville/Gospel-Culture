@@ -1,11 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RecentCard from '../components/Card/RecentCard';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import appConfig from '../appConfig';
 import CardCarousel from '../components/CardCarousel';
 import FullPageHero from '../components/FullPageHero';
 import FullWidthSection from '../components/PageSections/FullWidthSection';
@@ -25,37 +23,38 @@ export async function getStaticProps() {
       client.getEntries({ content_type: 'podcast', limit: 4 }),
       client.getEntries({ content_type: 'sermon', limit: 4 }),
       client.getEntries({ content_type: 'article', limit: 4 }),
-      client.getEntries({ content_type: 'contributor', limit: 6 }),
+      client.getEntries({ content_type: 'contributor', limit: 8 }),
     ]);
 
-    // Get raw URL from Contentful asset
     const getAssetUrl = (asset: any) => {
-      if (!asset?.fields?.file?.url) return null;
+      if (!asset?.fields?.file?.url) return '/placeholder.png'; // Fallback image
       return asset.fields.file.url.startsWith('//') ? `https:${asset.fields.file.url}` : asset.fields.file.url;
     };
 
     const recentResources = [
       ...podcasts.items.map((item: any) => ({
         type: 'Podcast' as const,
-        title: item.fields.title,
+        title: item.fields.title || 'Untitled Podcast',
         link: `/podcasts/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.podcastCover),
+        description: item.fields.description ?? null, // Add description, default to null
         sys: item.sys,
       })),
       ...sermons.items.map((item: any) => ({
         type: 'Sermon' as const,
-        title: item.fields.title,
+        title: item.fields.title || 'Untitled Sermon',
         link: `/sermons/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.customThumbnail),
-        videoUrl: item.fields.slug || null,
+        videoUrl: item.fields.ytSermonSHORT || null,
+        description: item.fields.description ?? null, // Add description, default to null
         sys: item.sys,
-        description: item.fields.description, // Add description to display in the carousel
       })),
       ...articles.items.map((item: any) => ({
         type: 'Article' as const,
-        title: item.fields.title,
+        title: item.fields.title || 'Untitled Article',
         link: `/articles/${item.sys.id}`,
-        imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : null,
+        imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : '/placeholder.png',
+        description: item.fields.description ?? null, // Add description, default to null
         sys: item.sys,
       })),
     ];
@@ -94,6 +93,7 @@ export async function getStaticProps() {
       props: {
         recentResources: [],
         contributorData: [],
+        sermonItems: [], // Added sermonItems to error case
       },
       revalidate: 60,
     };
@@ -110,13 +110,13 @@ const HomePage = ({
   sermonItems: any[];
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string>(''); // state to hold video URL
+  const [videoUrl, setVideoUrl] = useState<string>('');
 
   const handleLearnMoreClick = () => {
-    const videoUrl = 'https://player.vimeo.com/video/970768769'; // Make sure this URL is correct
-    console.log('Setting video URL:', videoUrl); // Add this to ensure the URL is being set
-    setVideoUrl(videoUrl); // Set the video URL correctly
-    setModalOpen(true); // Open the modal
+    const videoUrl = 'https://player.vimeo.com/video/970768769';
+    console.log('Setting video URL:', videoUrl);
+    setVideoUrl(videoUrl);
+    setModalOpen(true);
   };
 
   useEffect(() => {
@@ -134,7 +134,7 @@ const HomePage = ({
           height="min-h-[90vh]"
           overlayStyle="bg-[#205952]"
           mainContent={
-            <div className={`flex flex-col gap-4 items-center -mt-12 ${appConfig.banner.isActive && 'mt-24'}`}>
+            <div className={`flex flex-col gap-4 items-center -mt-12`}>
               <img src="/images/cgc-badge-gold.webp" alt="Logo Badge" className="w-10 h-24 md:w-32 md:h-32" />
               <h1 className="font-bold text-white text-5xl md:text-6xl text-center mt-6">
                 Helping churches reflect
@@ -152,7 +152,7 @@ const HomePage = ({
                   <button className="px-6 py-2 bg-bt-yellow text-white font-bold">Subscribe for Updates</button>
                 </Link>
                 <button
-                  onClick={handleLearnMoreClick} // Ensure this calls the correct function
+                  onClick={handleLearnMoreClick}
                   className="px-6 py-2 bg-white text-bt-yellow font-bold border-bt-yellow"
                 >
                   Learn More
@@ -222,7 +222,11 @@ const HomePage = ({
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-300">Recent Resources</h2>
           <div className="grid grid-cols-3 gap-6">
             {recentResources.map((resource, index) => (
-              <RecentCard key={index} {...resource} customThumbnailUrl={resource?.imageUrl || resource?.videoUrl} />
+              <RecentCard
+                key={index}
+                {...resource}
+                customThumbnailUrl={resource?.imageUrl || resource?.videoUrl}
+              />
             ))}
           </div>
         </SectionWithMargin>
@@ -230,7 +234,7 @@ const HomePage = ({
         {/* Meet Contributors Section */}
         <FullWidthSection bgColor="bg-[#2a2727]">
           <h2 className="text-4xl font-bold mb-6 text-white/90 text-center">Meet Our Contributors</h2>
-          <div className="grid grid-cols-2 md:flex md:items-center gap-4">
+          <div className="grid grid-cols-4 md:grid-cols-4 gap-6">
             {contributorData.map((contributor) => (
               <MeetContributorCard key={contributor.link} contributor={contributor} />
             ))}
@@ -255,9 +259,6 @@ const HomePage = ({
                     <span className="text-bodySmall md:text-body font-bold leading-tight text-gray-800 dark:text-gray-300">
                       {sermon.title}
                     </span>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {sermon.description || 'No description available'}
-                    </p>
                   </div>
                 </div>
               </Link>
