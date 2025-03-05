@@ -1,8 +1,8 @@
 import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
 import { ContentfulArticle } from '../../models/contentful';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
-import { BLOCKS, INLINES } from '@contentful/rich-text-types';
+import { documentToReactComponents, Options } from '@contentful/rich-text-react-renderer';
+import { BLOCKS, INLINES, Block, Inline } from '@contentful/rich-text-types';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -69,18 +69,18 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
     return <div className="text-center text-xl">Article not found</div>;
   }
 
-  const { title, subtitle, datePublished, text: articleText, images } = article; // Renamed to 'text'
+  const { title, subtitle, datePublished, text: articleText, images } = article;
 
-  const options = {
+  const options: Options = {
     renderNode: {
-      [BLOCKS.PARAGRAPH]: (node, children) => <p className="mb-4">{children}</p>,
-      [BLOCKS.HEADING_1]: (node, children) => <h1 className="text-3xl font-bold mt-6">{children}</h1>,
-      [BLOCKS.HEADING_2]: (node, children) => <h2 className="text-2xl font-semibold mt-4">{children}</h2>,
-      [BLOCKS.UL_LIST]: (node, children) => <ul className="list-disc pl-6">{children}</ul>,
-      [BLOCKS.OL_LIST]: (node, children) => <ol className="list-decimal pl-6">{children}</ol>,
-      [BLOCKS.QUOTE]: (node, children) => <blockquote className="border-l-4 pl-4 italic text-gray-600">{children}</blockquote>,
-      [INLINES.HYPERLINK]: (node, children) => (
-        <a href={node.data.uri} className="text-blue-600 underline">
+      [BLOCKS.PARAGRAPH]: (node: Block | Inline, children: React.ReactNode) => <p className="mb-4">{children}</p>,
+      [BLOCKS.HEADING_1]: (node: Block | Inline, children: React.ReactNode) => <h1 className="text-3xl font-bold mt-6">{children}</h1>,
+      [BLOCKS.HEADING_2]: (node: Block | Inline, children: React.ReactNode) => <h2 className="text-2xl font-semibold mt-4">{children}</h2>,
+      [BLOCKS.UL_LIST]: (node: Block | Inline, children: React.ReactNode) => <ul className="list-disc pl-6">{children}</ul>,
+      [BLOCKS.OL_LIST]: (node: Block | Inline, children: React.ReactNode) => <ol className="list-decimal pl-6">{children}</ol>,
+      [BLOCKS.QUOTE]: (node: Block | Inline, children: React.ReactNode) => <blockquote className="border-l-4 pl-4 italic text-gray-600">{children}</blockquote>,
+      [INLINES.HYPERLINK]: (node: Block | Inline, children: React.ReactNode) => (
+        <a href={(node as Inline).data.uri} className="text-blue-600 underline">
           {children}
         </a>
       ),
@@ -113,7 +113,7 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
             <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
           </header>
 
-          {images?.length > 0 && (
+          {images && images.length > 0 && (
             <div className="mb-8">
               <img
                 src={images[0].fields.file.url}

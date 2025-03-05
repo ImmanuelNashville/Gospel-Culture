@@ -2,8 +2,8 @@ import { GetStaticProps, GetStaticPaths } from 'next';
 import { createClient } from 'contentful';
 import { ContentfulSermonFields } from '../../models/contentful';
 import { ContentfulSermon } from '../../models/contentful';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
-import { BLOCKS } from '@contentful/rich-text-types'; // For rendering options
+import { documentToReactComponents, Options } from '@contentful/rich-text-react-renderer';
+import { BLOCKS, Block, Inline, Document } from '@contentful/rich-text-types'; // Added Document import
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -58,7 +58,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
 const getYouTubeEmbedUrl = (url: string | undefined) => {
   if (!url) return null;
-  const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/);
+  const videoIdMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be|youtube\.com\/embed\/)([^&?]+)/);
   const videoId = videoIdMatch ? videoIdMatch[1] : null;
   return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
 };
@@ -82,19 +82,19 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
 
   const youtubeEmbedUrl = getYouTubeEmbedUrl(ytSermonSHORT);
 
-  // Rendering options for rich text (consistent with your article page)
-  const renderOptions = {
+  // Rendering options for rich text with proper typing
+  const renderOptions: Options = {
     renderNode: {
-      [BLOCKS.PARAGRAPH]: (node, children) => <p className="mb-4">{children}</p>,
-      [BLOCKS.HEADING_1]: (node, children) => <h1 className="text-3xl font-bold mt-6">{children}</h1>,
-      [BLOCKS.HEADING_2]: (node, children) => <h2 className="text-2xl font-semibold mt-4">{children}</h2>,
+      [BLOCKS.PARAGRAPH]: (node: Block | Inline, children: React.ReactNode) => <p className="mb-4">{children}</p>,
+      [BLOCKS.HEADING_1]: (node: Block | Inline, children: React.ReactNode) => <h1 className="text-3xl font-bold mt-6">{children}</h1>,
+      [BLOCKS.HEADING_2]: (node: Block | Inline, children: React.ReactNode) => <h2 className="text-2xl font-semibold mt-4">{children}</h2>,
     },
   };
 
   // Render description as rich text
   let renderedDescription = null;
-  if (description && description.nodeType === 'document') {
-    renderedDescription = documentToReactComponents(description, renderOptions);
+  if (description && 'nodeType' in description && description.nodeType === 'document') {
+    renderedDescription = documentToReactComponents(description as Document, renderOptions);
   }
 
   return (
