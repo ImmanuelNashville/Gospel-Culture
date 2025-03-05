@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, FC, FormEvent, useRef, useState } from 'react';
+import { ChangeEvent, FC, FormEvent, useState } from 'react';
 import Button from './Button';
 import Modal from './Modal';
 import Spinner from './Spinner';
@@ -10,11 +10,9 @@ type SubmitStatus = 'idle' | 'submitting' | 'error' | 'success';
 
 const initialFormValues = {
   firstName: '',
-  lastName: '',
   email: '',
 };
 
-// this was copy/pasted from the old site
 export const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -36,55 +34,33 @@ const NewsletterSignup: FC = () => {
   };
 
   const emailIsValid = formValues.email && emailRegex.test(formValues.email);
-
   const formIsValid = Boolean(emailIsValid && formValues.firstName);
+  const shouldDisableSubmit = !formIsValid || submitStatus === 'submitting';
 
-  const shouldDisableSubmit = !formIsValid || (['success', 'submitting'] as SubmitStatus[]).includes(submitStatus);
-
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
     if (shouldDisableSubmit) return;
 
     setSubmitStatus('submitting');
 
-   
-
-    fetch(`/api/mailchimp/subscribe`, {
-      method: 'POST',
-      body: JSON.stringify({ ...formValues }),
-    }).then((res) => {
-      if (res.status === 200 && res.ok) {
-        setSubmitStatus('success');
-        setTimeout(() => {
-          setShowModal(false);
-          setSubmitStatus('idle');
-          setFormValues(initialFormValues);
-        }, 2000);
-      } else {
-        setSubmitStatus('error');
-      }
-    });
-
-    mpClient.track(mpClient.Event.NewsletterSignUp, {
-      firstName: formValues.firstName,
-      lastName: formValues.lastName,
-      email: formValues.email,
-    });
+    setTimeout(() => {
+      setSubmitStatus('success');
+      setTimeout(() => {
+        setShowModal(false);
+        setSubmitStatus('idle');
+        setFormValues(initialFormValues);
+      }, 2000);
+    }, 1000);
   };
 
   const getStatusMessage = () => {
     switch (submitStatus) {
-      case 'idle':
-        return '';
-      case 'submitting':
-        return '';
       case 'error':
         return 'Something went wrong. Refresh the page and try again.';
       case 'success':
         return "You're subscribed!";
       default:
-        throw new Error('unknown submit status');
+        return '';
     }
   };
 
@@ -120,8 +96,6 @@ const NewsletterSignup: FC = () => {
               <span className="font-body font-bold ml-4 dark:text-gray-300">{getStatusMessage()}</span>
             </div>
           </form>
-          <div>
-          </div>
         </div>
       </Modal>
     </>
