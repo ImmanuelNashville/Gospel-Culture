@@ -88,7 +88,6 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
           <span className="sr-only">Center for Gospel Culture</span>
           <div className="ml-4 md:ml-6 lg:ml-10 hidden items-center gap-6 md:flex">
             {navLinksLeft
-              .filter((link) => (link.href === '/my-courses' ? Boolean(user) : true))
               .map((navLink) => (
                 <NavLink key={navLink.href} href={navLink.href} label={navLink.label} textTheme={textTheme} />
               ))}
