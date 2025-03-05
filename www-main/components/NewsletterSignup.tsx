@@ -22,7 +22,6 @@ const NewsletterSignup: FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
-  const captchaRef = useRef<ReCAPTCHA | null>(null);
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -49,12 +48,11 @@ const NewsletterSignup: FC = () => {
 
     setSubmitStatus('submitting');
 
-    const captchaToken = await captchaRef.current?.executeAsync();
-    captchaRef.current?.reset();
+   
 
     fetch(`/api/mailchimp/subscribe`, {
       method: 'POST',
-      body: JSON.stringify({ ...formValues, captchaToken }),
+      body: JSON.stringify({ ...formValues }),
     }).then((res) => {
       if (res.status === 200 && res.ok) {
         setSubmitStatus('success');
