@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import RecentCard from '../components/Card/RecentCard';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import CardCarousel from '../components/CardCarousel';
 import FullPageHero from '../components/FullPageHero';
 import FullWidthSection from '../components/PageSections/FullWidthSection';
@@ -35,24 +34,27 @@ export async function getStaticProps() {
     const recentResources = [
       ...podcasts.items.map((item: any) => ({
         type: 'Podcast' as const,
-        title: item.fields.title,
+        title: item.fields.title || 'Untitled Podcast',
         link: `/podcasts/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.podcastCover),
+        description: item.fields.description ?? null, // Add description, default to null
         sys: item.sys,
       })),
       ...sermons.items.map((item: any) => ({
         type: 'Sermon' as const,
-        title: item.fields.title,
+        title: item.fields.title || 'Untitled Sermon',
         link: `/sermons/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.customThumbnail),
-        videoUrl: item.fields.ytSermonSHORT || null, // Updated field name
+        videoUrl: item.fields.ytSermonSHORT || null,
+        description: item.fields.description ?? null, // Add description, default to null
         sys: item.sys,
       })),
       ...articles.items.map((item: any) => ({
         type: 'Article' as const,
-        title: item.fields.title,
+        title: item.fields.title || 'Untitled Article',
         link: `/articles/${item.sys.id}`,
-        imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : '/placeholder.png', // Default to placeholder
+        imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : '/placeholder.png',
+        description: item.fields.description ?? null, // Add description, default to null
         sys: item.sys,
       })),
     ];
@@ -91,6 +93,7 @@ export async function getStaticProps() {
       props: {
         recentResources: [],
         contributorData: [],
+        sermonItems: [], // Added sermonItems to error case
       },
       revalidate: 60,
     };
@@ -107,13 +110,13 @@ const HomePage = ({
   sermonItems: any[];
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [videoUrl, setVideoUrl] = useState<string>(''); // state to hold video URL
+  const [videoUrl, setVideoUrl] = useState<string>('');
 
   const handleLearnMoreClick = () => {
-    const videoUrl = 'https://player.vimeo.com/video/970768769'; // Make sure this URL is correct
-    console.log('Setting video URL:', videoUrl); // Add this to ensure the URL is being set
-    setVideoUrl(videoUrl); // Set the video URL correctly
-    setModalOpen(true); // Open the modal
+    const videoUrl = 'https://player.vimeo.com/video/970768769';
+    console.log('Setting video URL:', videoUrl);
+    setVideoUrl(videoUrl);
+    setModalOpen(true);
   };
 
   useEffect(() => {
@@ -149,7 +152,7 @@ const HomePage = ({
                   <button className="px-6 py-2 bg-bt-yellow text-white font-bold">Subscribe for Updates</button>
                 </Link>
                 <button
-                  onClick={handleLearnMoreClick} // Ensure this calls the correct function
+                  onClick={handleLearnMoreClick}
                   className="px-6 py-2 bg-white text-bt-yellow font-bold border-bt-yellow"
                 >
                   Learn More
@@ -219,7 +222,11 @@ const HomePage = ({
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-300">Recent Resources</h2>
           <div className="grid grid-cols-3 gap-6">
             {recentResources.map((resource, index) => (
-              <RecentCard key={index} {...resource} customThumbnailUrl={resource?.imageUrl || resource?.videoUrl} />
+              <RecentCard
+                key={index}
+                {...resource}
+                customThumbnailUrl={resource?.imageUrl || resource?.videoUrl}
+              />
             ))}
           </div>
         </SectionWithMargin>
@@ -252,7 +259,6 @@ const HomePage = ({
                     <span className="text-bodySmall md:text-body font-bold leading-tight text-gray-800 dark:text-gray-300">
                       {sermon.title}
                     </span>
-                   
                   </div>
                 </div>
               </Link>
