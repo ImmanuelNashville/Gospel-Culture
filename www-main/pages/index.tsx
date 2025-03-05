@@ -11,6 +11,8 @@ import SectionWithMargin from '../components/PageSections/SectionWithMargin';
 import { SectionDivider } from '../components/SectionDivider';
 import MeetContributorCard from '../components/Card/MeetContributorCard';
 import { createClient } from 'contentful';
+import Button from '../components/Button';
+import NewsletterModal from '../components/NewsletterModal'; // Import the new modal component
 
 export async function getStaticProps() {
   const client = createClient({
@@ -27,7 +29,7 @@ export async function getStaticProps() {
     ]);
 
     const getAssetUrl = (asset: any) => {
-      if (!asset?.fields?.file?.url) return '/placeholder.png'; // Fallback image
+      if (!asset?.fields?.file?.url) return '/placeholder.png';
       return asset.fields.file.url.startsWith('//') ? `https:${asset.fields.file.url}` : asset.fields.file.url;
     };
 
@@ -37,7 +39,7 @@ export async function getStaticProps() {
         title: item.fields.title || 'Untitled Podcast',
         link: `/podcasts/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.podcastCover),
-        description: item.fields.description ?? null, // Add description, default to null
+        description: item.fields.description ?? null,
         sys: item.sys,
       })),
       ...sermons.items.map((item: any) => ({
@@ -46,7 +48,7 @@ export async function getStaticProps() {
         link: `/sermons/${item.sys.id}`,
         imageUrl: getAssetUrl(item.fields.customThumbnail),
         videoUrl: item.fields.ytSermonSHORT || null,
-        description: item.fields.description ?? null, // Add description, default to null
+        description: item.fields.description ?? null,
         sys: item.sys,
       })),
       ...articles.items.map((item: any) => ({
@@ -54,12 +56,11 @@ export async function getStaticProps() {
         title: item.fields.title || 'Untitled Article',
         link: `/articles/${item.sys.id}`,
         imageUrl: item.fields.images?.[0] ? getAssetUrl(item.fields.images[0]) : '/placeholder.png',
-        description: item.fields.description ?? null, // Add description, default to null
+        description: item.fields.description ?? null,
         sys: item.sys,
       })),
     ];
 
-    // Sort by most recent
     recentResources.sort((a, b) => {
       const dateA = new Date(a.sys?.createdAt || 0);
       const dateB = new Date(b.sys?.createdAt || 0);
@@ -93,7 +94,7 @@ export async function getStaticProps() {
       props: {
         recentResources: [],
         contributorData: [],
-        sermonItems: [], // Added sermonItems to error case
+        sermonItems: [],
       },
       revalidate: 60,
     };
@@ -109,27 +110,27 @@ const HomePage = ({
   contributorData: any[];
   sermonItems: any[];
 }) => {
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isVideoModalOpen, setVideoModalOpen] = useState(false);
+  const [isNewsletterModalOpen, setNewsletterModalOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>('');
 
   const handleLearnMoreClick = () => {
     const videoUrl = 'https://player.vimeo.com/video/970768769';
     console.log('Setting video URL:', videoUrl);
     setVideoUrl(videoUrl);
-    setModalOpen(true);
+    setVideoModalOpen(true);
   };
 
   useEffect(() => {
-    if (isModalOpen) {
-      console.log('Modal opened with video URL:', videoUrl);
+    if (isVideoModalOpen) {
+      console.log('Video modal opened with video URL:', videoUrl);
     }
-  }, [isModalOpen, videoUrl]);
+  }, [isVideoModalOpen, videoUrl]);
 
   return (
     <div>
       <Navbar />
       <main>
-        {/* Hero Section */}
         <FullPageHero
           height="min-h-[90vh]"
           overlayStyle="bg-[#205952]"
@@ -146,11 +147,8 @@ const HomePage = ({
                 Jesus
               </p>
 
-              {/* Buttons */}
               <div className="flex gap-4 mt-4">
-                <Link href="/subscribe">
-                  <button className="px-6 py-2 bg-bt-yellow text-white font-bold">Subscribe for Updates</button>
-                </Link>
+                <Button className="px-6 py-2 bg-bt-yellow text-white font-bold" onClick={() => setNewsletterModalOpen(true)}>Open Newsletter Signup</Button>
                 <button
                   onClick={handleLearnMoreClick}
                   className="px-6 py-2 bg-white text-bt-yellow font-bold border-bt-yellow"
@@ -162,18 +160,15 @@ const HomePage = ({
           }
         />
 
-        {isModalOpen && (
+        {isVideoModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
             <div className="relative bg-white rounded-lg shadow-lg w-full max-w-6xl p-6">
-              {/* Close Button */}
               <button
-                onClick={() => setModalOpen(false)}
+                onClick={() => setVideoModalOpen(false)}
                 className="absolute top-3 right-3 bg-gray-200 text-gray-800 rounded-full p-2"
               >
                 ✕
               </button>
-
-              {/* Larger Video */}
               <div className="w-full h-[80vh]">
                 <iframe
                   src={videoUrl}
@@ -188,7 +183,10 @@ const HomePage = ({
           </div>
         )}
 
-        {/* Sermon Resources */}
+        {isNewsletterModalOpen && (
+          <NewsletterModal open={isNewsletterModalOpen} onClose={() => setNewsletterModalOpen(false)} />
+        )}
+
         <SectionWithMargin>
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-300">More Resources</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -217,7 +215,6 @@ const HomePage = ({
           <SectionDivider />
         </SectionWithMargin>
 
-        {/* Additional Sections */}
         <SectionWithMargin>
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-300">Recent Resources</h2>
           <div className="grid grid-cols-3 gap-6">
@@ -231,7 +228,6 @@ const HomePage = ({
           </div>
         </SectionWithMargin>
 
-        {/* Meet Contributors Section */}
         <FullWidthSection bgColor="bg-[#2a2727]">
           <h2 className="text-4xl font-bold mb-6 text-white/90 text-center">Meet Our Contributors</h2>
           <div className="grid grid-cols-4 md:grid-cols-4 gap-6">
@@ -241,36 +237,42 @@ const HomePage = ({
           </div>
         </FullWidthSection>
 
-        {/* Sermon Carousel */}
         <SectionWithMargin>
-          <CardCarousel
-            title="Featured Sermons"
-            subtitle="Check out some of our latest sermons."
-            containerStyles="pb-10 px-2"
-            items={sermonItems.map((sermon, index) => (
-              <Link
-                key={sermon.sys.id}
-                href={sermon.link}
-                className="border-2 shadow-md border-transparent hover:shadow-xl hover:scale-[103%] cursor-pointer flex-shrink-0 block w-small-card md:w-card isolate bg-bt-background-light dark:bg-gray-800 rounded-xl overflow-hidden p-2 transition-all duration-200"
-              >
-                <div className="p-1 rounded-md filter-none border border-black/10">
-                  <Image src={sermon.imageUrl} alt={sermon.title} width={300} height={200} className="rounded-md" />
-                  <div className="flex flex-col px-0.5 pt-2 pb-1">
-                    <span className="text-bodySmall md:text-body font-bold leading-tight text-gray-800 dark:text-gray-300">
-                      {sermon.title}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+        <CardCarousel
+  title="Featured Sermons"
+  subtitle="Check out some of our latest sermons."
+  containerStyles="pb-10 px-2"
+  items={sermonItems.map((sermon, index) => (
+    <Link
+      key={sermon.sys.id}
+      href={sermon.link}
+      className="border-2 shadow-md border-transparent hover:shadow-xl hover:scale-[103%] cursor-pointer flex-shrink-0 block w-small-card md:w-card isolate bg-bt-background-light dark:bg-gray-800 rounded-xl overflow-hidden p-2 transition-all duration-200"
+    >
+      <div className="p-1 rounded-md filter-none border border-black/10">
+        <div className="relative w-full h-0 pb-[66.67%]"> {/* Enforce 3:2 aspect ratio */}
+          <Image
+            src={sermon.imageUrl}
+            alt={sermon.title}
+            fill
+            className="rounded-md object-cover object-center"
+            sizes="(max-width: 768px) 100vw, 300px" // Adjust based on your layout
           />
+        </div>
+        <div className="flex flex-col px-0.5 pt-2 pb-1">
+          <span className="text-bodySmall md:text-body font-bold leading-tight text-gray-800 dark:text-gray-300">
+            {sermon.title}
+          </span>
+        </div>
+      </div>
+    </Link>
+  ))}
+/>
         </SectionWithMargin>
 
         <SectionWithMargin>
           <SectionDivider />
         </SectionWithMargin>
 
-        {/* Want More Section */}
         <FullWidthSection
           bgColor="bg-gradient-to-tr bg-[#205952] via-bt-green to-white/30 dark:to-black/30"
           secondaryOverlay={

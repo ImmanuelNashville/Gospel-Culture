@@ -94,7 +94,7 @@ const PodcastPage = ({ podcast }: { podcast: ContentfulPodcast['fields'] | null 
           {/* Render Subscribe Link */}
           {subscribeLink && (
             <div className="text-center">
-              <a href={subscribeLink} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+              <a href={subscribeLink} target="_blank" rel="noopener noreferrer" className="text-[#205952]">
                 Subscribe to Podcast
               </a>
             </div>

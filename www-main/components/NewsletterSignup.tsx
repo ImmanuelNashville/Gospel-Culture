@@ -8,6 +8,11 @@ import TextInput from './TextInput';
 
 type SubmitStatus = 'idle' | 'submitting' | 'error' | 'success';
 
+interface NewsletterSignupProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
 const initialFormValues = {
   firstName: '',
   email: '',
@@ -16,15 +21,17 @@ const initialFormValues = {
 export const emailRegex =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-const NewsletterSignup: FC = () => {
-  const [showModal, setShowModal] = useState(false);
+const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
+  const [internalShowModal, setInternalShowModal] = useState(false);
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
 
-  const handleModalClose = () => {
-    setShowModal(false);
+  // Use external isOpen if provided, otherwise use internal state
+  const showModal = isOpen !== undefined ? isOpen : internalShowModal;
+  const handleModalClose = onClose || (() => {
+    setInternalShowModal(false);
     setSubmitStatus('idle');
-  };
+  });
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormValues({
@@ -46,7 +53,7 @@ const NewsletterSignup: FC = () => {
     setTimeout(() => {
       setSubmitStatus('success');
       setTimeout(() => {
-        setShowModal(false);
+        handleModalClose();
         setSubmitStatus('idle');
         setFormValues(initialFormValues);
       }, 2000);
@@ -64,6 +71,8 @@ const NewsletterSignup: FC = () => {
     }
   };
 
+  
+
   return (
     <>
       <div className="w-72 text-left bg-gray-200 dark:bg-gray-800 p-6 rounded-xl">
@@ -71,7 +80,7 @@ const NewsletterSignup: FC = () => {
         <p className="font-bodycopy text-body mb-4 text-gray-600 dark:text-gray-300">
           The latest news, articles, and resources, sent to your inbox weekly.
         </p>
-        <Button size="small" variant="secondary" className="px-5" onClick={() => setShowModal(true)}>
+        <Button size="small" variant="secondary" className="px-5" onClick={() => setInternalShowModal(true)}>
           Sign Up
         </Button>
       </div>

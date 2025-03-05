@@ -68,7 +68,7 @@ const PodcastsPage = ({ podcasts }: { podcasts: ContentfulPodcast['fields'][] })
                       href={subscribeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-4 block text-blue-600 font-bold"
+                      className="mt-4 block text-[#205952] font-bold"
                     >
                       Subscribe
                     </a>

@@ -5,6 +5,8 @@ import { documentToReactComponents, Options } from '@contentful/rich-text-react-
 import { BLOCKS, INLINES, Block, Inline } from '@contentful/rich-text-types';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import Image from 'next/image';
+import Link from 'next/link';
 
 // Helper function to get Contentful client
 const getContentfulClient = () => {
@@ -46,25 +48,48 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const client = getContentfulClient();
 
   try {
-    const article = await client.getEntry(id);
+    const article = await client.getEntry(id, { include: 2 });
     const typedArticle = article as { fields: ContentfulArticle['fields'] };
     console.log('Fetched article fields:', JSON.stringify(typedArticle.fields, null, 2));
 
+    let contributor = null;
+    if (typedArticle.fields.contributor) {
+      const contributorEntry = typedArticle.fields.contributor as any;
+      contributor = {
+        name: contributorEntry.fields.name || 'Unnamed Contributor',
+        entryTitle: contributorEntry.fields.entryTitle || '',
+        imagePath: contributorEntry.fields.profilePhoto?.fields?.file?.url
+          ? `https:${contributorEntry.fields.profilePhoto.fields.file.url}`
+          : '/default-avatar.png',
+        link: `/contributors/${contributorEntry.sys.id}`,
+      };
+    }
+
     return {
-      props: { article: typedArticle.fields },
+      props: {
+        article: typedArticle.fields,
+        contributor,
+      },
     };
   } catch (error) {
     console.error('Error fetching article with ID', id, ':', error);
-    return { props: { article: null } };
+    return { props: { article: null, contributor: null } };
   }
 };
 
 interface ArticlePageProps {
   article: ContentfulArticle['fields'] | null;
+  contributor: {
+    name: string;
+    entryTitle: string;
+    imagePath: string;
+    link: string;
+  } | null;
 }
 
-const ArticlePage = ({ article }: ArticlePageProps) => {
+const ArticlePage = ({ article, contributor }: ArticlePageProps) => {
   console.log('Article prop in component:', article);
+  console.log('Contributor prop in component:', contributor);
   if (!article) {
     return <div className="text-center text-xl">Article not found</div>;
   }
@@ -80,7 +105,7 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
       [BLOCKS.OL_LIST]: (node: Block | Inline, children: React.ReactNode) => <ol className="list-decimal pl-6">{children}</ol>,
       [BLOCKS.QUOTE]: (node: Block | Inline, children: React.ReactNode) => <blockquote className="border-l-4 pl-4 italic text-gray-600">{children}</blockquote>,
       [INLINES.HYPERLINK]: (node: Block | Inline, children: React.ReactNode) => (
-        <a href={(node as Inline).data.uri} className="text-blue-600 underline">
+        <a href={(node as Inline).data.uri} className="text-[#205952] underline">
           {children}
         </a>
       ),
@@ -106,10 +131,10 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
       <main className="max-w-4xl mx-auto p-6">
         <div className="p-8">
           <header className="text-center mb-8">
-            <p className="text-sm text-gray-500">
-              {datePublished ? new Date(datePublished).toLocaleDateString() : 'Date not available'}
+            <p className="text-sm text-gray-500 mb-4">
+              {datePublished ? new Date(datePublished).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Date not available'}
             </p>
-            <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
+            <h1 className="text-4xl font-bold text-gray-800 mb-2">{title}</h1>
             <h2 className="text-2xl font-semibold text-gray-600 mb-4">{subtitle}</h2>
           </header>
 
@@ -124,6 +149,29 @@ const ArticlePage = ({ article }: ArticlePageProps) => {
           )}
 
           <section className="prose lg:prose-xl max-w-[700px] mx-auto text-gray-800">
+            {/* Contributor Section */}
+            {contributor && (
+              <div className="flex items-center justify-left gap-3 mt-4 mb-6">
+                <Image
+                  src={contributor.imagePath}
+                  alt={contributor.name}
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+                <div className="text-left">
+                  <p className="text-sm text-gray-500">
+                    Article by{' '}
+                    <Link href={contributor.link} className="text-[#205952] hover:underline">
+                      {contributor.name}
+                    </Link>
+                  </p>
+                  {contributor.entryTitle && (
+                    <p className="text-sm text-gray-500">{contributor.entryTitle}</p>
+                  )}
+                </div>
+              </div>
+            )}
             <div>{renderedArticleText}</div>
           </section>
         </div>
