@@ -86,7 +86,7 @@ export async function getStaticProps() {
         contributorData,
         sermonItems,
       },
-      revalidate: 3600,
+      revalidate: 60,
     };
   } catch (error) {
     console.error('Contentful Fetch Error:', error);
