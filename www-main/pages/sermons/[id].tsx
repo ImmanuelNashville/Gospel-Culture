@@ -100,46 +100,61 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
   return (
     <>
       <Navbar />
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-        {shortText && <p className="text-lg text-gray-600 mb-4">{shortText}</p>}
-        {reference && <p className="text-sm text-gray-500 mb-4">Reference: {reference}</p>}
+      <main className="max-w-4xl mx-auto p-6">
+        <div className="p-8">
+          <header className="text-center mb-8">
+            {reference && (
+              <p className="text-base text-gray-500 mb-4">Reference: {reference}</p>
+            )}
+            <h1 className="text-5xl font-bold text-gray-800 mb-2">{title}</h1>
+            {shortText && (
+              <p className="text-3xl font-semibold text-gray-600 mb-4">{shortText}</p>
+            )}
+          </header>
 
-        {/* YouTube Video */}
-        <div className="mt-6 mb-6">
-          {youtubeEmbedUrl ? (
-            <iframe
-              width="100%"
-              height="400"
-              src={youtubeEmbedUrl}
-              title={title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="rounded-lg shadow-md"
-            ></iframe>
-          ) : (
-            <p className="text-gray-500">No video available for this sermon.</p>
-          )}
+          {/* YouTube Video */}
+          <div className="mb-8">
+            {youtubeEmbedUrl ? (
+              <div className="relative w-full h-0 pb-[56.25%]">
+                <iframe
+                  src={youtubeEmbedUrl}
+                  title={title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute top-0 left-0 w-full h-full rounded-lg shadow-md"
+                ></iframe>
+              </div>
+            ) : customThumbnail?.fields?.file?.url ? (
+              <img
+                src={`https:${customThumbnail.fields.file.url}`}
+                alt={title}
+                className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-md"
+              />
+            ) : (
+              <p className="text-gray-500">No video or thumbnail available for this sermon.</p>
+            )}
+          </div>
+
+          <section className="prose prose-base md:prose-lg lg:prose-xl max-w-[700px] mx-auto text-gray-800">
+           
+
+            {/* Description under video */}
+            {renderedDescription && <div className="mb-6">{renderedDescription}</div>}
+
+            {relatedItemsLabel && (
+              <h3 className="text-2xl font-semibold text-gray-700 mb-4">{relatedItemsLabel}</h3>
+            )}
+            {relatedItems && relatedItems.length > 0 && (
+              <ul className="list-disc pl-6 mb-6">
+                {relatedItems.map((item) => (
+                  <li key={item.sys.id}>{item.fields.title}</li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
-
-        {/* Description under video */}
-        {renderedDescription && (
-          <div className="prose prose-lg mb-6">{renderedDescription}</div>
-        )}
-
-        {relatedItemsLabel && <h3 className="text-xl font-semibold text-gray-700 mb-4">{relatedItemsLabel}</h3>}
-        {relatedItems && relatedItems.length > 0 && (
-          <ul className="list-disc pl-6">
-            {relatedItems.map((item) => (
-              <li key={item.sys.id} className="text-lg text-gray-700">
-                {item.fields.title}
-              </li>
-            ))}
-          </ul>
-        )}
-        
-      </div>
+      </main>
       <Footer />
     </>
   );

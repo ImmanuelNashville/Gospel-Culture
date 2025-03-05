@@ -167,7 +167,7 @@ const ArticlePage = ({ article, contributor }: ArticlePageProps) => {
                     </Link>
                   </p>
                   {contributor.entryTitle && (
-                    <p className="text-sm text-gray-500">{contributor.entryTitle}</p>
+                    <p className="text-base text-gray-500">{contributor.entryTitle}</p>
                   )}
                 </div>
               </div>
