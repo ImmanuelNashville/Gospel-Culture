@@ -138,15 +138,7 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
             ))}
           </ul>
         )}
-        {customThumbnail && (
-          <div className="mt-6">
-            <img
-              src={customThumbnail.fields.file.url}
-              alt={title}
-              className="w-full h-auto max-h-[400px] object-cover rounded-lg shadow-md"
-            />
-          </div>
-        )}
+        
       </div>
       <Footer />
     </>

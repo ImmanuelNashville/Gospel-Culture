@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import Link from 'next/link';
+import NewsletterSignup from './NewsletterSignup';
 import SocialLinks from './SocialLinks';
 
 const navigation = [
@@ -32,7 +33,7 @@ const Footer: FC = () => {
               </div>
             ))}
           </nav>
-         
+          <NewsletterSignup />
         </div>
         <hr className="my-8 dark:border-gray-600" />
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
