@@ -12,6 +12,10 @@ import btLogoImage from '../public/images/logo.png';
 
 const navLinksLeft = [
   {
+    label: 'Articles',
+    href: '/articles'
+  },
+  {
     label: 'Podcasts',
     href: '/podcasts',
   },
