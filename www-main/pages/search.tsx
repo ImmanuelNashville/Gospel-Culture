@@ -89,7 +89,7 @@ const SearchPage = ({ allResources }: { allResources: any[] }) => {
 
           <input
             type="text"
-            className="px-4 py-2 border border-gray-300 rounded-lg"
+            className="px-4 py-2 border border-gray-300 rounded-lg w-full md:w-1/2 lg:w-1/3"
             placeholder="Search for Podcasts, Sermons, Articles..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
