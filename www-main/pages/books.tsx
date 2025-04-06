@@ -21,26 +21,30 @@ export const getStaticProps: GetStaticProps = async () => {
 
 const BooksPage = ({ books }: { books: any[] }) => {
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900">
       <Navbar />
-      <main className="max-w-6xl mx-auto p-6">
-        <h1 className="text-5xl font-bold mb-8">Books</h1>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {books.map((book) => (
-            <Link key={book.sys.id} href={`/books/${book.sys.id}`} passHref>
-              <div className="text-center cursor-pointer hover:opacity-80 transition">
-                {book.fields.bookImage?.fields.file.url && (
-                  <img
-                    src={book.fields.bookImage.fields.file.url}
-                    alt={book.fields.title}
-                    className="w-full h-auto max-h-[300px] object-cover mx-auto"
-                  />
-                )}
-                <h2 className="text-lg font-semibold mt-4">{book.fields.title}</h2>
-                <p className="text-gray-600">{book.fields.subtitle}</p>
-              </div>
-            </Link>
-          ))}
+      <main className="w-full">
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-white">Books</h1>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {books.map((book) => (
+              <Link key={book.sys.id} href={`/books/${book.sys.id}`} passHref>
+                <div className="text-center cursor-pointer hover:opacity-80 transition">
+                  {book.fields.bookImage?.fields.file.url && (
+                    <div className="relative w-full aspect-[2/3] mb-4">
+                      <img
+                        src={book.fields.bookImage.fields.file.url}
+                        alt={book.fields.title}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    </div>
+                  )}
+                  <h2 className="text-lg font-semibold mt-1 text-gray-800 dark:text-white">{book.fields.title}</h2>
+                  <p className="text-gray-600 dark:text-gray-300">{book.fields.subtitle}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </main>
       <Footer />

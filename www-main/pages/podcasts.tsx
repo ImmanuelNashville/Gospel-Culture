@@ -1,7 +1,6 @@
 import { GetStaticProps } from 'next';
 import { createClient } from 'contentful';
-import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
-import { BLOCKS, INLINES } from '@contentful/rich-text-types';
+import { INLINES } from '@contentful/rich-text-types';
 import { ContentfulPodcast } from '../models/contentful';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -21,7 +20,6 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
-// Function to extract the first hyperlink from rich text
 const getSubscribeUrl = (subscribeLink: any) => {
   if (!subscribeLink) return null;
 
@@ -44,39 +42,42 @@ const PodcastsPage = ({ podcasts }: { podcasts: ContentfulPodcast['fields'][] })
   return (
     <div>
       <Navbar />
-      <main className="max-w-6xl mx-auto p-6">
-        <h1 className="text-5xl font-bold mb-8">Podcasts</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {podcasts.map((podcast, index) => {
-            const subscribeUrl = getSubscribeUrl(podcast.subscribeLink);
-            return (
-              <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
-                {podcast.podcastCover?.fields.file.url && (
-                  <img
-                    src={podcast.podcastCover.fields.file.url}
-                    alt={podcast.title}
-                    className="w-full h-100 object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <h2 className="text-xl font-semibold">{podcast.title}</h2>
-                  <p className="text-gray-600">{podcast.subtitle}</p>
-
-                  {/* Display "Subscribe" link if available */}
-                  {subscribeUrl && (
-                    <a
-                      href={subscribeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-4 block text-[#205952] font-bold"
-                    >
-                      Subscribe
-                    </a>
+      <main className="w-full">
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-white">Podcasts</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {podcasts.map((podcast, index) => {
+              const subscribeUrl = getSubscribeUrl(podcast.subscribeLink);
+              return (
+                <div key={index} className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+                  {podcast.podcastCover?.fields.file.url && (
+                    <div className="relative w-full aspect-[1/1.1]">
+                      <img
+                        src={podcast.podcastCover.fields.file.url}
+                        alt={podcast.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   )}
+                  <div className="p-4">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{podcast.title}</h2>
+                    <p className="text-gray-600 dark:text-gray-300">{podcast.subtitle}</p>
+
+                    {subscribeUrl && (
+                      <a
+                        href={subscribeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 block text-[#205952] font-bold"
+                      >
+                        Subscribe
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </main>
       <Footer />

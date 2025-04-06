@@ -6,17 +6,16 @@ import Footer from '../../components/Footer';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const spaceId = process.env.CONTENTFUL_SPACE_ID;
-const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
+  const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
 
-if (!spaceId || !accessToken) {
-  throw new Error("Missing Contentful environment variables.");
-}
+  if (!spaceId || !accessToken) {
+    throw new Error("Missing Contentful environment variables.");
+  }
 
-const client = createClient({
-  space: spaceId,
-  accessToken: accessToken,
-});
-
+  const client = createClient({
+    space: spaceId,
+    accessToken: accessToken,
+  });
 
   const res = await client.getEntries({ content_type: 'book' });
 
@@ -52,7 +51,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 };
 
-// Extract first hyperlink from rich text
 const getFirstLink = (richText: any) => {
   if (!richText) return null;
 
@@ -79,50 +77,58 @@ const BookPage = ({ book }: { book: any }) => {
   const downloadUrl = getFirstLink(book.downloadLink);
 
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900">
       <Navbar />
-      <main className="max-w-6xl mx-auto p-6 flex flex-col md:flex-row gap-12">
-        {/* Book Cover */}
-        <div className="w-full md:w-1/3">
-          {book.bookImage?.fields.file.url && (
-            <img
-              src={book.bookImage.fields.file.url}
-              alt={book.title}
-              className="w-full h-auto object-cover shadow-lg"
-            />
-          )}
+      <main className="w-full">
+        <div className="max-w-6xl mx-auto px-4 py-12 flex flex-col md:flex-row gap-12">
+          {/* Book Cover */}
+          <div className="w-full md:w-1/3">
+            {book.bookImage?.fields.file.url && (
+              <div className="aspect-[2/3] w-full">
+                <img
+                  src={book.bookImage.fields.file.url}
+                  alt={book.title}
+                  className="w-full h-full object-cover rounded-md shadow-lg"
+                />
+              </div>
+            )}
 
-          {/* Buttons */}
-          <div className="mt-6 flex gap-4">
-            {downloadUrl && (
-              <a
-                href={downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-red-600 text-white px-4 py-2 rounded-md font-bold text-center flex-1"
-              >
-                Download
-              </a>
-            )}
-            {purchaseUrl && (
-              <a
-                href={purchaseUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-red-600 text-white px-4 py-2 rounded-md font-bold text-center flex-1"
-              >
-                Purchase
-              </a>
-            )}
+            {/* Buttons */}
+            <div className="mt-6 flex flex-col gap-4">
+              {downloadUrl && (
+                <a
+                  href={downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#205952] hover:bg-[#17403d] text-white px-4 py-2 rounded-md font-bold text-center transition-colors"
+                >
+                  Download
+                </a>
+              )}
+              {purchaseUrl && (
+                <a
+                  href={purchaseUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#205952] hover:bg-[#17403d] text-white px-4 py-2 rounded-md font-bold text-center transition-colors"
+                >
+                  Purchase
+                </a>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Book Info */}
-        <div className="w-full md:w-2/3">
-          <h1 className="text-4xl font-bold">{book.title}</h1>
-          {book.contributor && <p className="text-lg text-gray-600 mt-2">by {book.contributor.fields.name}</p>}
-          <div className="mt-6 text-lg text-gray-800">
-            {book.description} {/* FIXED: Now renders as plain text */}
+          {/* Book Info */}
+          <div className="w-full md:w-2/3">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{book.title}</h1>
+            {book.contributor && (
+              <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+                by {book.contributor.fields.name}
+              </p>
+            )}
+            <div className="mt-6 text-lg text-gray-800 dark:text-gray-200">
+              {book.description}
+            </div>
           </div>
         </div>
       </main>

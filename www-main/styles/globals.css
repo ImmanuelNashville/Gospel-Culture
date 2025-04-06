@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'keen-slider/keen-slider.min.css';
 
 html ::-webkit-scrollbar {
   @apply my-6 w-2 h-2;

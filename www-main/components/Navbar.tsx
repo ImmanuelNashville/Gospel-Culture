@@ -16,12 +16,16 @@ const navLinksLeft = [
     href: '/articles'
   },
   {
+    label: 'Books',
+    href: '/books',
+  },
+  {
     label: 'Podcasts',
     href: '/podcasts',
   },
   {
-    label: 'Books',
-    href: '/books',
+    label: 'Sermons',
+    href: '/sermons',
   },
 ];
 
@@ -73,7 +77,7 @@ const Navbar: FC<NavbarProps> = ({ backgroundStyle = 'bg-bt-background-light dar
 
   return (
     <Popover
-      className={`relative z-20 ${backgroundStyle} backdrop-blur-lg flex w-full justify-center px-4 shadow-sm filter ${textTheme} ${
+      className={`relative z-50 ${backgroundStyle} backdrop-blur-lg flex w-full justify-center px-4 shadow-sm filter ${textTheme} ${
         isTransparent ? '' : 'sticky top-0 bg-opacity-90'
       }`}
     >

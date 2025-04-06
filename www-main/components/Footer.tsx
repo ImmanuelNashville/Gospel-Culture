@@ -1,14 +1,10 @@
 import { FC } from 'react';
 import Link from 'next/link';
 import NewsletterSignup from './NewsletterSignup';
-import SocialLinks from './SocialLinks';
 
 const navigation = [
   { name: 'About', href: '/about' },
-  { name: 'Log In', href: '/#' },
-  { name: 'FAQ', href: '/faq' },
   { name: 'Contact Us', href: '/contact' },
-  { name: 'Terms of Use', href: '/terms-of-use' },
   { name: 'Privacy Policy', href: '/privacy-policy' },
 ];
 
@@ -37,8 +33,7 @@ const Footer: FC = () => {
         </div>
         <hr className="my-8 dark:border-gray-600" />
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <SocialLinks />
-          <p className="text-subtitle2 uppercase font-bodycopy text-gray-600 dark:text-gray-500">
+          <p className="text-subtitle2 font-bodycopy text-gray-600 dark:text-gray-500">
             &copy; {new Date().getFullYear()} The Center of Gospel Culture. All rights reserved.
           </p>
         </div>

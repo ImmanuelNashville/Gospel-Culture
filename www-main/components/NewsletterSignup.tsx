@@ -26,7 +26,6 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
   const [formValues, setFormValues] = useState(initialFormValues);
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus>('idle');
 
-  // Use external isOpen if provided, otherwise use internal state
   const showModal = isOpen !== undefined ? isOpen : internalShowModal;
   const handleModalClose = onClose || (() => {
     setInternalShowModal(false);
@@ -44,20 +43,32 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
   const formIsValid = Boolean(emailIsValid && formValues.firstName);
   const shouldDisableSubmit = !formIsValid || submitStatus === 'submitting';
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (shouldDisableSubmit) return;
 
     setSubmitStatus('submitting');
 
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formValues),
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+
       setSubmitStatus('success');
+
       setTimeout(() => {
         handleModalClose();
         setSubmitStatus('idle');
         setFormValues(initialFormValues);
       }, 2000);
-    }, 1000);
+    } catch (err) {
+      console.error(err);
+      setSubmitStatus('error');
+    }
   };
 
   const getStatusMessage = () => {
@@ -71,8 +82,6 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  
-
   return (
     <>
       <div className="w-72 text-left bg-gray-200 dark:bg-gray-800 p-6 rounded-xl">
@@ -80,7 +89,12 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
         <p className="font-bodycopy text-body mb-4 text-gray-600 dark:text-gray-300">
           The latest news, articles, and resources, sent to your inbox weekly.
         </p>
-        <Button size="small" variant="secondary" className="px-5" onClick={() => setInternalShowModal(true)}>
+        <Button
+          size="small"
+          variant="secondary"
+          className="px-5"
+          onClick={() => setInternalShowModal(true)}
+        >
           Sign Up
         </Button>
       </div>
@@ -92,8 +106,18 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
             unsubscribe anytime.
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <TextInput label="First Name" id="firstName" value={formValues.firstName} onChange={handleInputChange} />
-            <TextInput label="Email Address" id="email" value={formValues.email} onChange={handleInputChange} />
+            <TextInput
+              label="First Name"
+              id="firstName"
+              value={formValues.firstName}
+              onChange={handleInputChange}
+            />
+            <TextInput
+              label="Email Address"
+              id="email"
+              value={formValues.email}
+              onChange={handleInputChange}
+            />
             <div className="pt-4">
               <Button
                 className="px-7"
@@ -102,7 +126,9 @@ const NewsletterSignup: FC<NewsletterSignupProps> = ({ isOpen, onClose }) => {
               >
                 {submitStatus === 'submitting' ? 'Submitting' : 'Sign Up'}
               </Button>
-              <span className="font-body font-bold ml-4 dark:text-gray-300">{getStatusMessage()}</span>
+              <span className="font-body font-bold ml-4 dark:text-gray-300">
+                {getStatusMessage()}
+              </span>
             </div>
           </form>
         </div>
