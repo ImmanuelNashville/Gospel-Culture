@@ -22,7 +22,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { id: item.sys.id },
   }));
 
-  return { paths, fallback: false };
+  return { paths, fallback: 'blocking' };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {

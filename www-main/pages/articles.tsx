@@ -2,7 +2,6 @@ import { GetStaticProps } from 'next';
 import { createClient } from 'contentful';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import SectionWithMargin from '../components/PageSections/SectionWithMargin';
 import SimpleCard from '../components/Card/SimpleCard'; // updated import
 
 export const getStaticProps: GetStaticProps = async () => {
@@ -29,7 +28,7 @@ export const getStaticProps: GetStaticProps = async () => {
     props: {
       articleItems,
     },
-    revalidate: 300,
+    revalidate: 60,
   };
 };
 

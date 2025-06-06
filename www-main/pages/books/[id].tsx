@@ -23,7 +23,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { id: book.sys.id },
   }));
 
-  return { paths, fallback: false };
+  return { paths, fallback: 'blocking' };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
