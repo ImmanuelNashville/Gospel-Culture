@@ -54,7 +54,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       .map((item: any) => {
         const type = item.sys.contentType.sys.id;
         let imageUrl = '/placeholder.png';
-
+      
         if (type === 'article') {
           imageUrl = item.fields.images?.[0]
             ? getAssetUrl(item.fields.images[0])
@@ -63,8 +63,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           imageUrl = getAssetUrl(item.fields.podcastCover);
         } else if (type === 'sermon') {
           imageUrl = getAssetUrl(item.fields.customThumbnail);
+        } else if (type === 'book') {
+          imageUrl = getAssetUrl(item.fields.bookImage);
         }
-
+      
         return {
           type: type.charAt(0).toUpperCase() + type.slice(1),
           title: item.fields.title || `Untitled ${type}`,
@@ -75,6 +77,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           sys: item.sys,
         };
       });
+      
 
     return {
       props: {
