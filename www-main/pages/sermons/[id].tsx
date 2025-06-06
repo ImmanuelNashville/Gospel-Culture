@@ -77,8 +77,6 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
     ytSermonSHORT,
     reference,
     description,
-    relatedItemsLabel,
-    relatedItems,
     customThumbnail,
   } = sermon;
 
@@ -143,17 +141,6 @@ const SermonPage = ({ sermon }: { sermon: ContentfulSermonFields | null }) => {
 
             {/* Description under video */}
             {renderedDescription && <div className="mb-6">{renderedDescription}</div>}
-
-            {relatedItemsLabel && (
-              <h3 className="text-2xl font-semibold text-gray-700 mb-4">{relatedItemsLabel}</h3>
-            )}
-            {relatedItems && relatedItems.length > 0 && (
-              <ul className="list-disc pl-6 mb-6">
-                {relatedItems.map((item) => (
-                  <li key={item.sys.id}>{item.fields.title}</li>
-                ))}
-              </ul>
-            )}
           </section>
         </div>
       </main>
