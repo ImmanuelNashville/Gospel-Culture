@@ -1,5 +1,5 @@
 // pages/contact.tsx
-import React, { useState, useRef, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useRef, ChangeEvent, FormEvent, useEffect } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -39,6 +39,16 @@ const ContactPage = () => {
     }
   };
 
+  // Optional UX improvement: auto-clear success/error message after 5s
+  useEffect(() => {
+    if (status === 'success' || status === 'error') {
+      const timer = setTimeout(() => {
+        setStatus('idle');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
+
   return (
     <>
       <Navbar />
@@ -48,12 +58,6 @@ const ContactPage = () => {
           <aside className="space-y-4 leading-relaxed bg-teal-700 p-6 pb-8 text-white">
             <h1 className="text-3xl font-bold">Get In Touch</h1>
             <p>Write to us and we will get back to you as soon as possible.</p>
-            <p>
-              Fill out this form, or give us a call at{' '}
-              <a href="tel:8136702409" className="underline font-medium">
-                (855) 123-4567
-              </a>
-            </p>
             <p>We’re here to help!</p>
             <p className="font-semibold">– The Gospel Culture Team</p>
           </aside>
@@ -109,8 +113,12 @@ const ContactPage = () => {
               <span>{status === 'sending' ? 'Sending...' : 'Send Message'}</span>
             </button>
 
-            {status === 'success' && <p className="text-green-600">Message sent!</p>}
-            {status === 'error' && <p className="text-red-600">Something went wrong.</p>}
+            {status === 'success' && (
+              <p className="text-green-600 font-medium mt-2">✅ Message sent successfully!</p>
+            )}
+            {status === 'error' && (
+              <p className="text-red-600 font-medium mt-2">⚠️ Something went wrong. Please try again or contact andrew@immanuelnashville.com.</p>
+            )}
           </form>
         </div>
       </main>
