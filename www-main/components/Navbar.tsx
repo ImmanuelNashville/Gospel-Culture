@@ -31,8 +31,8 @@ const navLinksLeft = [
 
 const navLinksRight = [
   {
-    label: 'Help',
-    href: '#',
+    label: 'Contact',
+    href: '/contact',
   },
 ];
 
