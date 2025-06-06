@@ -9,7 +9,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const accessToken = process.env.CONTENTFUL_ACCESS_KEY;
 
   if (!spaceId || !accessToken) {
-    throw new Error("Missing Contentful environment variables.");
+    throw new Error('Missing Contentful environment variables.');
   }
 
   const client = createClient({
@@ -83,11 +83,11 @@ const BookPage = ({ book }: { book: any }) => {
         <div className="max-w-6xl mx-auto px-4 py-12 flex flex-col md:flex-row gap-12">
           {/* Book Cover */}
           <div className="w-full md:w-1/3">
-            {book.bookImage?.fields.file.url && (
+            {book.bookImage?.fields?.file?.url && (
               <div className="aspect-[2/3] w-full">
                 <img
                   src={book.bookImage.fields.file.url}
-                  alt={book.title}
+                  alt={book.title ?? 'Book cover'}
                   className="w-full h-full object-cover rounded-md shadow-lg"
                 />
               </div>
@@ -120,15 +120,21 @@ const BookPage = ({ book }: { book: any }) => {
 
           {/* Book Info */}
           <div className="w-full md:w-2/3">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{book.title}</h1>
-            {book.contributor && (
+            {book.title && (
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">{book.title}</h1>
+            )}
+
+            {book.contributor?.fields?.name && (
               <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
                 by {book.contributor.fields.name}
               </p>
             )}
-            <div className="mt-6 text-lg text-gray-800 dark:text-gray-200">
-              {book.description}
-            </div>
+
+            {book.description && (
+              <div className="mt-6 text-lg text-gray-800 dark:text-gray-200">
+                {book.description}
+              </div>
+            )}
           </div>
         </div>
       </main>

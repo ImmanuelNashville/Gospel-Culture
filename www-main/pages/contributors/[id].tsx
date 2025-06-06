@@ -63,6 +63,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
           imageUrl = getAssetUrl(item.fields.podcastCover);
         } else if (type === 'sermon') {
           imageUrl = getAssetUrl(item.fields.customThumbnail);
+        } else if (type === 'book') {
+          imageUrl = getAssetUrl(item.fields.bookImage);
         }
 
         return {
