@@ -8,6 +8,7 @@ import Link from 'next/link';
 import va from '@vercel/analytics';
 import { FC, Fragment } from 'react';
 import btLogoImage from '../public/images/logo.png';
+import { HeartOff } from 'lucide-react';
 
 
 const navLinksLeft = [
@@ -26,6 +27,10 @@ const navLinksLeft = [
   {
     label: 'Sermons',
     href: '/sermons',
+  },
+  {
+    label: 'Donate',
+    href: 'https://pushpay.com/g/immanuelnashville?fnd=QRB1oqY99tlkZJSSUo9HGg&lang=en&src=pcgl',
   },
 ];
 
