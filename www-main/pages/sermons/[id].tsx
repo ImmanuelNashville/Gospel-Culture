@@ -29,7 +29,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { id: sermon.sys.id.toString() },
   }));
 
-  return { paths, fallback: false };
+  return { paths, fallback: 'blocking' };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
