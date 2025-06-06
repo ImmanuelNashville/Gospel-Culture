@@ -95,7 +95,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         },
         relatedContent: formattedRelatedContent,
       },
-      revalidate: 3600,
+      revalidate: 300,
     };
   } catch (error) {
     console.error('Contentful Fetch Error:', error);
