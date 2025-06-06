@@ -44,6 +44,8 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         props: {
           sermon: sermon.fields as ContentfulSermon['fields'],
         },
+        revalidate: 60,
+
       };
     } else {
       return {
